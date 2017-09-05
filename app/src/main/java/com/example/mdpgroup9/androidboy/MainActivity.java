@@ -47,6 +47,11 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothDevice connectingDevice;
     private ArrayAdapter<String> discoveredDevicesAdapter;
 
+//    private Button btnForward;
+//    private Button btnLeft;
+//    private Button btnRight;
+//    private Button btnBack;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         // chatMessages = new ArrayList<>();
         //  chatAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, chatMessages);
 //        listView.setAdapter(chatAdapter);
+        buttonFunctions();
     }
 
     private Handler handler = new Handler(new Handler.Callback() {
@@ -96,20 +102,20 @@ public class MainActivity extends AppCompatActivity {
                             break;
                     }
                     break;
-                case MESSAGE_WRITE:
-                    byte[] writeBuf = (byte[]) msg.obj;
-
-                    String writeMessage = new String(writeBuf);
-                    chatMessages.add("Me: " + writeMessage);
-                    chatAdapter.notifyDataSetChanged();
-                    break;
-                case MESSAGE_READ:
-                    byte[] readBuf = (byte[]) msg.obj;
-
-                    String readMessage = new String(readBuf, 0, msg.arg1);
-                    chatMessages.add(connectingDevice.getName() + ":  " + readMessage);
-                    chatAdapter.notifyDataSetChanged();
-                    break;
+//                case MESSAGE_WRITE:
+//                    byte[] writeBuf = (byte[]) msg.obj;
+//
+//                    String writeMessage = new String(writeBuf);
+//                    chatMessages.add("Me: " + writeMessage);
+//                    chatAdapter.notifyDataSetChanged();
+//                    break;
+//                case MESSAGE_READ:
+//                    byte[] readBuf = (byte[]) msg.obj;
+//
+//                    String readMessage = new String(readBuf, 0, msg.arg1);
+//                    chatMessages.add(connectingDevice.getName() + ":  " + readMessage);
+//                    chatAdapter.notifyDataSetChanged();
+//                    break;
                 case MESSAGE_DEVICE_OBJECT:
                     connectingDevice = msg.getData().getParcelable(DEVICE_OBJECT);
                     Toast.makeText(getApplicationContext(), "Connected to " + connectingDevice.getName(),
@@ -231,6 +237,8 @@ public class MainActivity extends AppCompatActivity {
 //                }
 //            }
 //        });
+
+
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -303,4 +311,41 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+
+    private void buttonFunctions()
+    {
+        Button btnForward = (Button) findViewById(R.id.btnForward);
+        btnForward.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage("F");
+            }
+        });
+
+
+        Button btnLeft = (Button) findViewById(R.id.btnLeft);
+        btnLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage("L");
+            }
+        });
+
+        Button btnRight = (Button) findViewById(R.id.btnRight);
+        btnRight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage("R");
+            }
+        });
+
+        Button btnBack = (Button) findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage("B");
+            }
+        });
+    }
 }
