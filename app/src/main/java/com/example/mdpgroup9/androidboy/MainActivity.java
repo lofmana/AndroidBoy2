@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.TextInputLayout;
@@ -34,6 +35,8 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.locks.ReadWriteLock;
+
+import static android.R.color.holo_red_light;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -65,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothDevice connectingDevice;
     private ArrayAdapter<String> discoveredDevicesAdapter;
 
+
+
 //    private Button btnForward;
 //    private Button btnLeft;
 //    private Button btnRight;
@@ -89,7 +94,13 @@ public class MainActivity extends AppCompatActivity {
         btnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showPrinterPickDialog();
+                if(btnConnect.getText() == "Disconnect")
+                {
+                    chatController.stop();
+                }
+                else if(btnConnect.getText() == "Connect") {
+                    showPrinterPickDialog();
+                }
             }
         });
 
@@ -110,6 +121,9 @@ public class MainActivity extends AppCompatActivity {
                     switch (msg.arg1) {
                         case ChatController.STATE_CONNECTED:
                             setStatus("Connected to: " + connectingDevice.getName());
+
+                            btnConnect.setBackgroundColor(Color.RED);
+                            btnConnect.setText("Disconnect");
                             //  btnConnect.setEnabled(false);
                             break;
                         case ChatController.STATE_CONNECTING:
@@ -119,6 +133,10 @@ public class MainActivity extends AppCompatActivity {
                         case ChatController.STATE_LISTEN:
                         case ChatController.STATE_NONE:
                             setStatus("Not connected");
+                            btnConnect.setBackgroundColor(Color.GREEN);
+                            btnConnect.setText("Connect");
+
+
                             break;
                     }
                     break;
@@ -200,7 +218,10 @@ public class MainActivity extends AppCompatActivity {
                 String address = info.substring(info.length() - 17);
 
                 connectToDevice(address);
+
+
                 dialog.dismiss();
+
             }
 
         });
@@ -213,7 +234,10 @@ public class MainActivity extends AppCompatActivity {
                 String address = info.substring(info.length() - 17);
 
                 connectToDevice(address);
+
                 dialog.dismiss();
+
+
             }
         });
 
@@ -265,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQUEST_ENABLE_BLUETOOTH:
                 if (resultCode == Activity.RESULT_OK) {
-                    chatController = new ChatController(this, handler);
+                    chatController = new ChatController(this, handler , this);
                 } else {
                     Toast.makeText(this, "Bluetooth still disabled, turn off application!", Toast.LENGTH_SHORT).show();
                     finish();
@@ -292,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH);
         } else {
-            chatController = new ChatController(this, handler);
+            chatController = new ChatController(this, handler , this);
         }
     }
 
@@ -400,6 +424,10 @@ public class MainActivity extends AppCompatActivity {
                 tv.setText("Going Backwards");
             }
         },this));
+
+
+
+
     }
 
 

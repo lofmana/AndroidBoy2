@@ -45,12 +45,14 @@
 
     <Button
         android:id="@+id/btn_connect"
-        android:layout_width="wrap_content"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
-        android:text="Connect"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentTop="true"
+        android:background="#3CFF33"
+        android:text="Connect"
+        android:radius = "40dp"/>
 
     <ImageView
         android:id="@+id/imageView2"
@@ -116,6 +118,7 @@
         android:layout_height="wrap_content"
         android:textSize="30sp"
         android:layout_below="@+id/btn_connect"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp" />
 
 </RelativeLayout>
