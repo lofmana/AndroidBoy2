@@ -75,7 +75,6 @@ public class RepeatListener implements OnTouchListener{
             case MotionEvent.ACTION_UP:
                 handler.removeCallbacks(handlerRunnable);
                 downView = null;
-                Log.d("myTag", "This is my message222");
 
                 TextView tv = (TextView)this.activity.findViewById(R.id.textViewStatus);
                 tv.setText("Stop");
