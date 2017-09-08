@@ -9,34 +9,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
+import android.view.Menu;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.View.OnTouchListener;
-import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
-import android.os.Handler;
-import android.view.MotionEvent;
-import android.view.View;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.locks.ReadWriteLock;
-
-import static android.R.color.holo_red_light;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -67,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private ChatController chatController;
     private BluetoothDevice connectingDevice;
     private ArrayAdapter<String> discoveredDevicesAdapter;
-
+    List<MapGrid> gridList = new ArrayList<MapGrid>();
 
 
 //    private Button btnForward;
@@ -109,8 +101,48 @@ public class MainActivity extends AppCompatActivity {
         //  chatAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, chatMessages);
 //        listView.setAdapter(chatAdapter);
         buttonFunctions();
+        populateMap();
 
     }
+
+    //Map
+    GridView grid;
+
+    private void populateMap(){
+        try{
+            grid = (GridView) findViewById(R.id.gridView);
+            GridAdapter adapter = null;
+            MapGrid mapGrid = null;
+            gridList =new ArrayList<MapGrid>();
+            for (int i=0;i<20;i++){
+                for (int k=0; k<15; k++){
+                    mapGrid = new MapGrid(i,k,"");
+                    gridList.add(mapGrid);
+                }
+            }
+            adapter = new GridAdapter(this,R.layout.map_adapter,gridList);
+            grid.setAdapter(adapter);
+            grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    view.setBackgroundColor(Color.GREEN);
+
+                }
+            });
+            Toast.makeText(this,"Map has been generated",Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Log.e(" poulate map", e.getMessage());
+        }
+
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main,menu);
+        return true;
+
+    }
+
 
     private Handler handler = new Handler(new Handler.Callback() {
 

@@ -9,18 +9,22 @@
     android:padding="@dimen/activity_horizontal_margin"
     tools:context="com.example.mdpgroup9.androidboy.MainActivity">
 
+    <GridView
+        android:id="@+id/gridView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#333"
+        android:horizontalSpacing="1dp"
+        android:numColumns="15"
+        android:verticalSpacing="1dp"
+        android:layout_alignParentTop="true" />
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="0.2"
         android:orientation="vertical"
         android:id="@+id/linearLayout">
-
-        <TextView
-            android:id="@+id/status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Not Connected" />
 
     </LinearLayout>
 
@@ -47,21 +51,22 @@
         android:id="@+id/btn_connect"
         android:layout_width="130dp"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
         android:background="#3CFF33"
         android:text="Connect"
-        android:radius = "40dp"/>
+        android:radius = "40dp"
+        android:layout_above="@+id/imageView2"
+        android:layout_alignRight="@+id/textViewStatus"
+        android:layout_alignEnd="@+id/textViewStatus"
+        android:layout_marginBottom="44dp" />
 
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:layout_marginLeft="45dp"
-        android:layout_marginStart="45dp"
+        android:layout_marginLeft="49dp"
+        android:layout_marginStart="49dp"
         app:srcCompat="@drawable/gamepad"
-        android:layout_marginBottom="159dp"
+        android:layout_marginBottom="32dp"
         android:layout_alignParentBottom="true"
         android:layout_toRightOf="@+id/linearLayout2"
         android:layout_toEndOf="@+id/linearLayout2" />
@@ -117,8 +122,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="30sp"
-        android:layout_below="@+id/btn_connect"
+        android:layout_marginRight="39dp"
+        android:layout_marginEnd="39dp"
+        android:layout_alignBottom="@+id/btnRight"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="28dp" />
+
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/btn_connect"
+        android:layout_alignBottom="@+id/btn_connect"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp" />
+        android:text="Not Connected" />
 
 </RelativeLayout>
