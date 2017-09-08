@@ -8,11 +8,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,11 +23,28 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.View.OnTouchListener;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
+import android.os.Handler;
+import android.view.MotionEvent;
+import android.view.View;
 
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.locks.ReadWriteLock;
+
+import static android.R.color.holo_red_light;
 
 public class MainActivity extends AppCompatActivity {
+
+
+
+
+
+    Handler repeatedHandler = new Handler();
 
     private TextView status;
     private Button btnConnect;
@@ -34,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> chatAdapter;
     private ArrayList<String> chatMessages;
     private BluetoothAdapter bluetoothAdapter;
+    private TextView textViewStatus;
 
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_READ = 2;
@@ -47,10 +68,13 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothDevice connectingDevice;
     private ArrayAdapter<String> discoveredDevicesAdapter;
 
+
+
 //    private Button btnForward;
 //    private Button btnLeft;
 //    private Button btnRight;
 //    private Button btnBack;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +94,13 @@ public class MainActivity extends AppCompatActivity {
         btnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showPrinterPickDialog();
+                if(btnConnect.getText() == "Disconnect")
+                {
+                    chatController.stop();
+                }
+                else if(btnConnect.getText() == "Connect") {
+                    showPrinterPickDialog();
+                }
             }
         });
 
@@ -79,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         //  chatAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, chatMessages);
 //        listView.setAdapter(chatAdapter);
         buttonFunctions();
+
     }
 
     private Handler handler = new Handler(new Handler.Callback() {
@@ -90,6 +121,9 @@ public class MainActivity extends AppCompatActivity {
                     switch (msg.arg1) {
                         case ChatController.STATE_CONNECTED:
                             setStatus("Connected to: " + connectingDevice.getName());
+
+                            btnConnect.setBackgroundColor(Color.RED);
+                            btnConnect.setText("Disconnect");
                             //  btnConnect.setEnabled(false);
                             break;
                         case ChatController.STATE_CONNECTING:
@@ -99,6 +133,10 @@ public class MainActivity extends AppCompatActivity {
                         case ChatController.STATE_LISTEN:
                         case ChatController.STATE_NONE:
                             setStatus("Not connected");
+                            btnConnect.setBackgroundColor(Color.GREEN);
+                            btnConnect.setText("Connect");
+
+
                             break;
                     }
                     break;
@@ -180,7 +218,10 @@ public class MainActivity extends AppCompatActivity {
                 String address = info.substring(info.length() - 17);
 
                 connectToDevice(address);
+
+
                 dialog.dismiss();
+
             }
 
         });
@@ -193,7 +234,10 @@ public class MainActivity extends AppCompatActivity {
                 String address = info.substring(info.length() - 17);
 
                 connectToDevice(address);
+
                 dialog.dismiss();
+
+
             }
         });
 
@@ -245,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQUEST_ENABLE_BLUETOOTH:
                 if (resultCode == Activity.RESULT_OK) {
-                    chatController = new ChatController(this, handler);
+                    chatController = new ChatController(this, handler , this);
                 } else {
                     Toast.makeText(this, "Bluetooth still disabled, turn off application!", Toast.LENGTH_SHORT).show();
                     finish();
@@ -272,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH);
         } else {
-            chatController = new ChatController(this, handler);
+            chatController = new ChatController(this, handler , this);
         }
     }
 
@@ -315,37 +359,76 @@ public class MainActivity extends AppCompatActivity {
 
     private void buttonFunctions()
     {
-        Button btnForward = (Button) findViewById(R.id.btnForward);
-        btnForward.setOnClickListener(new View.OnClickListener() {
+
+
+
+
+
+      Button btnForward = (Button) findViewById(R.id.btnForward);
+        btnForward.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendMessage("F");
+                TextView tv = (TextView)findViewById(R.id.textViewStatus);
+                tv.setText("Going Forward");
             }
-        });
+        },this));
+
+
+//        btnForward.setOnTouchListener(new OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                if(event.getAction() == MotionEvent.ACTION_UP) {
+//                    // Execute your Runnable after 5000 milliseconds = 5 seconds.
+//                    TextView tv = (TextView)findViewById(R.id.textViewStatus);
+//                    tv.setText("Stop");
+//                }
+//                else if (event.getAction() == MotionEvent.ACTION_UP)
+//                {
+//                    sendMessage("F");
+////                TextView tv = (TextView)findViewById(R.id.textViewStatus);
+////                tv.setText("Going Forward");
+//                }
+//                return true;
+//            }
+//        });
+
 
 
         Button btnLeft = (Button) findViewById(R.id.btnLeft);
-        btnLeft.setOnClickListener(new View.OnClickListener() {
+        btnLeft.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendMessage("L");
+                TextView tv = (TextView)findViewById(R.id.textViewStatus);
+                tv.setText("Going Left");
             }
-        });
+        },this));
 
         Button btnRight = (Button) findViewById(R.id.btnRight);
-        btnRight.setOnClickListener(new View.OnClickListener() {
+        btnRight.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendMessage("R");
+                TextView tv = (TextView)findViewById(R.id.textViewStatus);
+                tv.setText("Going Right");
             }
-        });
+        },this));
 
         Button btnBack = (Button) findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(new View.OnClickListener() {
+        btnBack.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendMessage("B");
+                TextView tv = (TextView)findViewById(R.id.textViewStatus);
+                tv.setText("Going Backwards");
             }
-        });
+        },this));
+
+
+
+
     }
+
+
 }

@@ -45,12 +45,14 @@
 
     <Button
         android:id="@+id/btn_connect"
-        android:layout_width="wrap_content"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
-        android:text="Connect"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentTop="true"
+        android:background="#3CFF33"
+        android:text="Connect"
+        android:radius = "40dp"/>
 
     <ImageView
         android:id="@+id/imageView2"
@@ -72,33 +74,51 @@
         android:layout_alignStart="@+id/imageView2"
         android:layout_alignTop="@+id/imageView2"
         android:layout_marginTop="50dp"
-        android:text="L" />
+        android:text=""
+        android:visibility="visible"
+        android:background="@android:color/transparent"/>
 
     <Button
         android:id="@+id/btnForward"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:text="F"
         android:layout_alignTop="@+id/imageView2"
+        android:layout_toEndOf="@+id/btnLeft"
         android:layout_toRightOf="@+id/btnLeft"
-        android:layout_toEndOf="@+id/btnLeft" />
+        android:text=""
+        android:visibility="visible"
+        android:background="@android:color/transparent"/>
 
     <Button
         android:id="@+id/btnRight"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:text="R"
         android:layout_below="@+id/btnForward"
+        android:layout_toEndOf="@+id/btnForward"
         android:layout_toRightOf="@+id/btnForward"
-        android:layout_toEndOf="@+id/btnForward" />
+        android:text=""
+        android:visibility="visible"
+        android:background="@android:color/transparent"/>
 
     <Button
         android:id="@+id/btnBack"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:text="B"
         android:layout_alignBottom="@+id/imageView2"
+        android:layout_toEndOf="@+id/btnLeft"
         android:layout_toRightOf="@+id/btnLeft"
-        android:layout_toEndOf="@+id/btnLeft" />
+        android:text=""
+        android:visibility="visible"
+        android:background="@android:color/transparent"/>
+
+    <TextView
+        android:id="@+id/textViewStatus"
+        android:text="Robot not moving"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="30sp"
+        android:layout_below="@+id/btn_connect"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp" />
 
 </RelativeLayout>

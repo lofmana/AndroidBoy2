@@ -16,14 +16,17 @@
 
 package com.example.mdpgroup9.androidboy;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.widget.Button;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +34,7 @@ import java.io.OutputStream;
 import java.util.UUID;
 
 public class ChatController {
+    public Activity activity;
     private static final String APP_NAME = "AndroidBoy";
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
@@ -46,12 +50,14 @@ public class ChatController {
     static final int STATE_CONNECTING = 2;
     static final int STATE_CONNECTED = 3;
 
-    public ChatController(Context context, Handler handler) {
+    public ChatController(Context context, Handler handler , Activity _activity) {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         state = STATE_NONE;
 
         this.handler = handler;
+        this.activity = _activity;
     }
+
 
     // Set the current state of the chat connection
     private synchronized void setState(int state) {
@@ -190,6 +196,7 @@ public class ChatController {
 
         // Start the service over to restart listening mode
         ChatController.this.start();
+
     }
 
     // runs while listening for incoming connections
