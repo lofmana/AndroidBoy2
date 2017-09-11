@@ -16,6 +16,7 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
+    public Menu menu;
 
     Handler repeatedHandler = new Handler();
 
@@ -71,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         setContentView(R.layout.activity_main);
         findViewsByIds();
@@ -138,10 +140,41 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.main,menu);
+
         return true;
 
     }
+
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.btnScan:
+                if((chatController.getState() == 0) || (chatController.getState() == 1))
+                {
+                    showPrinterPickDialog();
+
+
+                }
+
+                else if ((chatController.getState() == 2) || (chatController.getState() == 3))
+                {
+                    chatController.stop();
+                    menu.findItem(R.id.btnScan).setIcon(R.drawable.ic_bluetooth_black_24dp);
+                }
+                return true;
+
+
+
+            default:
+                // If we got here, the user's action was not recognized.
+                // Invoke the superclass to handle it.
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
 
 
     private Handler handler = new Handler(new Handler.Callback() {
@@ -154,8 +187,9 @@ public class MainActivity extends AppCompatActivity {
                         case ChatController.STATE_CONNECTED:
                             setStatus("Connected to: " + connectingDevice.getName());
 
-                            btnConnect.setBackgroundColor(Color.RED);
-                            btnConnect.setText("Disconnect");
+//                            btnConnect.setBackgroundColor(Color.RED);
+//                            btnConnect.setText("Disconnect");
+                            menu.findItem(R.id.btnScan).setIcon(R.drawable.ic_bluetooth_connected_black_24dp);
                             //  btnConnect.setEnabled(false);
                             break;
                         case ChatController.STATE_CONNECTING:
@@ -165,8 +199,7 @@ public class MainActivity extends AppCompatActivity {
                         case ChatController.STATE_LISTEN:
                         case ChatController.STATE_NONE:
                             setStatus("Not connected");
-                            btnConnect.setBackgroundColor(Color.GREEN);
-                            btnConnect.setText("Connect");
+
 
 
                             break;

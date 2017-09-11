@@ -6,7 +6,7 @@
 
 <!---Search Icon -->
     <item
-        android:id="@+id/bluetooth_get"
+        android:id="@+id/btnScan"
         android:icon="@drawable/ic_bluetooth_black_24dp"
         android:title=""
         app:showAsAction="always"
