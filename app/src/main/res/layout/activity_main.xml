@@ -51,13 +51,14 @@
         android:id="@+id/btn_connect"
         android:layout_width="130dp"
         android:layout_height="wrap_content"
-        android:background="#3CFF33"
-        android:text="Connect"
-        android:radius = "40dp"
         android:layout_above="@+id/imageView2"
-        android:layout_alignRight="@+id/textViewStatus"
         android:layout_alignEnd="@+id/textViewStatus"
-        android:layout_marginBottom="44dp" />
+        android:layout_alignRight="@+id/textViewStatus"
+        android:layout_marginBottom="44dp"
+        android:background="#3CFF33"
+        android:radius="40dp"
+        android:text="Connect"
+        android:visibility="invisible" />
 
     <ImageView
         android:id="@+id/imageView2"
