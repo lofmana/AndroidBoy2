@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,10 +23,13 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.support.v4.app.DialogFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,11 +42,23 @@ public class MainActivity extends AppCompatActivity {
     public Menu menu;
 
     Handler repeatedHandler = new Handler();
+    final Handler handler2 = new Handler();
 
     private TextView status;
     private Button btnConnect;
     private ListView listView;
     private Dialog dialog;
+    private TextView tv;
+    private Button btnForward;
+    private Button btnLeft;
+    private Button btnRight;
+    private Button btnBack;
+    private ImageButton btnExplore;
+    private ImageButton btnFast;
+    private ImageButton btnA;
+    private ImageButton btnB;
+    private EditText editCommandA;
+    private EditText editCommandB;
     private TextInputLayout inputLayout;
     private ArrayAdapter<String> chatAdapter;
     private ArrayList<String> chatMessages;
@@ -55,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int MESSAGE_DEVICE_OBJECT = 4;
     public static final int MESSAGE_TOAST = 5;
     public static final String DEVICE_OBJECT = "device_name";
+    public static String preDevice ;
 
     private static final int REQUEST_ENABLE_BLUETOOTH = 1;
     private ChatController chatController;
@@ -63,10 +80,10 @@ public class MainActivity extends AppCompatActivity {
     List<MapGrid> gridList = new ArrayList<MapGrid>();
 
 
-//    private Button btnForward;
-//    private Button btnLeft;
-//    private Button btnRight;
-//    private Button btnBack;
+
+
+    SharedPreferences sharedpreferences;
+
 
 
     @Override
@@ -98,12 +115,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //set chat adapter
-        // chatMessages = new ArrayList<>();
-        //  chatAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, chatMessages);
+       // set chat adapter
+         chatMessages = new ArrayList<>();
+          chatAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, chatMessages);
 //        listView.setAdapter(chatAdapter);
         buttonFunctions();
         populateMap();
+
+
+        sharedpreferences = getSharedPreferences("COMMANDS" , MODE_PRIVATE);
+        String commandA = sharedpreferences.getString("COMMAND_A" , "A");
+        String commandB = sharedpreferences.getString("COMMAND_B" , "B");
+
+        //editCommandA.setText(commandA);
+       // editCommandB.setText(commandB);
+
+        Log.d("test" , sharedpreferences.getString("COMMAND_A" , "A"));
+
 
     }
 
@@ -141,7 +169,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
+
+
+        getMenuInflater().inflate(R.menu.settings,menu);
         getMenuInflater().inflate(R.menu.main,menu);
+
+
 
         return true;
 
@@ -165,11 +198,17 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return true;
 
+            case R.id.btnSettings:
+
+
+                showSettings();
+
 
 
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
+
                 return super.onOptionsItemSelected(item);
 
         }
@@ -199,26 +238,28 @@ public class MainActivity extends AppCompatActivity {
                         case ChatController.STATE_LISTEN:
                         case ChatController.STATE_NONE:
                             setStatus("Not connected");
-
+                            handler2.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    menu.findItem(R.id.btnScan).setIcon(R.drawable.ic_bluetooth_black_24dp);
+                                }
+                            }, 500);
 
 
                             break;
                     }
                     break;
-//                case MESSAGE_WRITE:
-//                    byte[] writeBuf = (byte[]) msg.obj;
-//
-//                    String writeMessage = new String(writeBuf);
-//                    chatMessages.add("Me: " + writeMessage);
-//                    chatAdapter.notifyDataSetChanged();
-//                    break;
-//                case MESSAGE_READ:
-//                    byte[] readBuf = (byte[]) msg.obj;
-//
-//                    String readMessage = new String(readBuf, 0, msg.arg1);
-//                    chatMessages.add(connectingDevice.getName() + ":  " + readMessage);
-//                    chatAdapter.notifyDataSetChanged();
-//                    break;
+                case MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    String readMessage = new String(readBuf, 0, msg.arg1);
+                    Log.d("text" , readMessage);
+                    readMessage = statusValidation(readMessage);
+                    tv.setText(readMessage);
+
+                 //   chatMessages.add(connectingDevice.getName() + ":  " + statusValidation(readMessage));
+                //    Log.d("test" , "2" + readMessage);
+                  //  chatAdapter.notifyDataSetChanged();
+                    break;
                 case MESSAGE_DEVICE_OBJECT:
                     connectingDevice = msg.getData().getParcelable(DEVICE_OBJECT);
                     Toast.makeText(getApplicationContext(), "Connected to " + connectingDevice.getName(),
@@ -283,6 +324,7 @@ public class MainActivity extends AppCompatActivity {
                 String address = info.substring(info.length() - 17);
 
                 connectToDevice(address);
+                preDevice = address;
 
 
                 dialog.dismiss();
@@ -299,6 +341,7 @@ public class MainActivity extends AppCompatActivity {
                 String address = info.substring(info.length() - 17);
 
                 connectToDevice(address);
+                preDevice = address;
 
                 dialog.dismiss();
 
@@ -332,6 +375,19 @@ public class MainActivity extends AppCompatActivity {
         btnConnect = (Button) findViewById(R.id.btn_connect);
         // listView = (ListView) findViewById(R.id.list);
         inputLayout = (TextInputLayout) findViewById(R.id.input_layout);
+        tv = (TextView)findViewById(R.id.textViewStatus);
+        btnForward = (Button) findViewById(R.id.btnForward);
+        btnBack = (Button) findViewById(R.id.btnBack);
+        btnLeft = (Button) findViewById(R.id.btnLeft);
+        btnRight = (Button) findViewById(R.id.btnRight);
+        btnExplore = (ImageButton) findViewById(R.id.btnExplore);
+        btnFast = (ImageButton) findViewById(R.id.btnFast);
+        btnA = (ImageButton) findViewById(R.id.btnA);
+        btnB =(ImageButton) findViewById(R.id.btnB);
+
+
+
+
         //  View btnSend = findViewById(R.id.btn_send);
 
 //        btnSend.setOnClickListener(new View.OnClickListener() {
@@ -429,68 +485,161 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-      Button btnForward = (Button) findViewById(R.id.btnForward);
+
         btnForward.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendMessage("F");
-                TextView tv = (TextView)findViewById(R.id.textViewStatus);
-                tv.setText("Going Forward");
+                tv.setText("Moving Forward");
             }
         },this));
 
 
-//        btnForward.setOnTouchListener(new OnTouchListener() {
-//            @Override
-//            public boolean onTouch(View v, MotionEvent event) {
-//                if(event.getAction() == MotionEvent.ACTION_UP) {
-//                    // Execute your Runnable after 5000 milliseconds = 5 seconds.
-//                    TextView tv = (TextView)findViewById(R.id.textViewStatus);
-//                    tv.setText("Stop");
-//                }
-//                else if (event.getAction() == MotionEvent.ACTION_UP)
-//                {
-//                    sendMessage("F");
-////                TextView tv = (TextView)findViewById(R.id.textViewStatus);
-////                tv.setText("Going Forward");
-//                }
-//                return true;
-//            }
-//        });
 
 
 
-        Button btnLeft = (Button) findViewById(R.id.btnLeft);
+
         btnLeft.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendMessage("L");
-                TextView tv = (TextView)findViewById(R.id.textViewStatus);
-                tv.setText("Going Left");
+
+                tv.setText("Turning Left");
             }
         },this));
 
-        Button btnRight = (Button) findViewById(R.id.btnRight);
+
         btnRight.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendMessage("R");
-                TextView tv = (TextView)findViewById(R.id.textViewStatus);
-                tv.setText("Going Right");
+
+                tv.setText("Turning Right");
             }
         },this));
 
-        Button btnBack = (Button) findViewById(R.id.btnBack);
+
         btnBack.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendMessage("B");
-                TextView tv = (TextView)findViewById(R.id.textViewStatus);
-                tv.setText("Going Backwards");
+                tv.setText("Reversing");
+            }
+        },this));
+
+        btnExplore.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage("E");
+                tv.setText("Exploring");
+            }
+        },this));
+
+        btnFast.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage("F");
+                tv.setText("Fastest Path");
             }
         },this));
 
 
+        btnA.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage(sharedpreferences.getString("COMMAND_A" , "A"));
+                tv.setText("Command A");
+            }
+        },this));
+
+
+        btnB.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendMessage(sharedpreferences.getString("COMMAND_B" , "B"));
+                tv.setText("Command B");
+            }
+        },this));
+
+
+
+    }
+
+
+
+    public String statusValidation(String text)
+    {
+        String status = "";
+
+
+
+        if (text.equals("{\"status\":\"turning right\"}" )) {
+            status = "Turning Right";
+        }
+
+        else  if (text.equals("{\"status\":\"turning left\"}")) {
+            status = "Turning Left";
+        }
+
+
+        else  if (text.equals("{\"status\":\"moving forward\"}")) {
+            status = "Moving Forward";
+        }
+
+        else  if (text.equals("{\"status\":\"reversing\"}")) {
+            status = "Reversing";
+        }
+
+        else  if (text.equals("{\"status\":\"exploring\"}")) {
+            status = "Exploring";
+        }
+        else  if (text.equals("{\"status\":\"fastest path\"}")) {
+            status = "Fastest Path";
+        }
+
+        return status;
+    }
+
+
+    private void showSettings() {
+        dialog = new Dialog(this);
+        dialog.setContentView(R.layout.settings);
+        dialog.setTitle("Settings");
+
+
+        editCommandA = (EditText)dialog.findViewById(R.id.editCommandA);
+        editCommandB = (EditText)dialog.findViewById(R.id.editCommandB);
+
+        editCommandA.setText(sharedpreferences.getString("COMMAND_A" , "A"));
+        editCommandB.setText(sharedpreferences.getString("COMMAND_B" , "B"));
+
+        dialog.findViewById(R.id.cancelButton).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+
+        dialog.findViewById(R.id.btnSave).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+
+               SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putString("COMMAND_A" , editCommandA.getText().toString());
+                editor.putString("COMMAND_B" , editCommandB.getText().toString());
+                editor.apply();
+
+                dialog.dismiss();
+                Log.d("test" , sharedpreferences.getString("COMMAND_A" , "A"));
+                Toast.makeText(getBaseContext(), "Settings Saved" , Toast.LENGTH_SHORT ).show();
+            }
+
+        });
+
+        dialog.show();
 
 
     }
