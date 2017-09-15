@@ -29,7 +29,6 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.support.v4.app.DialogFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -252,7 +251,6 @@ public class MainActivity extends AppCompatActivity {
                 case MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
                     String readMessage = new String(readBuf, 0, msg.arg1);
-                    Log.d("text" , readMessage);
                     readMessage = statusValidation(readMessage);
                     tv.setText(readMessage);
 
@@ -597,6 +595,13 @@ public class MainActivity extends AppCompatActivity {
             status = "Fastest Path";
         }
 
+        else
+        {
+            status = text;
+        }
+
+        Log.d("command" , text);
+
         return status;
     }
 
@@ -633,7 +638,7 @@ public class MainActivity extends AppCompatActivity {
                 editor.apply();
 
                 dialog.dismiss();
-                Log.d("test" , sharedpreferences.getString("COMMAND_A" , "A"));
+               // Log.d("test" , sharedpreferences.getString("COMMAND_A" , "A"));
                 Toast.makeText(getBaseContext(), "Settings Saved" , Toast.LENGTH_SHORT ).show();
             }
 
