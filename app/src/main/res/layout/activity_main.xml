@@ -61,60 +61,59 @@
 
     <ImageView
         android:id="@+id/imageView2"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginLeft="51dp"
-        android:layout_marginStart="51dp"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
         app:srcCompat="@drawable/gamepad"
-        android:layout_below="@+id/btn_connect"
-        android:layout_toRightOf="@+id/linearLayout"
-        android:layout_toEndOf="@+id/linearLayout"
-        android:layout_marginTop="37dp" />
+        android:layout_above="@+id/textViewStatus"
+        android:layout_toLeftOf="@+id/status"
+        android:layout_toStartOf="@+id/status"
+        android:layout_marginBottom="10dp" />
 
     <Button
         android:id="@+id/btnLeft"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignLeft="@+id/imageView2"
-        android:layout_alignStart="@+id/imageView2"
-        android:layout_alignTop="@+id/imageView2"
-        android:layout_marginTop="50dp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:text=""
         android:visibility="visible"
-        android:background="@android:color/transparent"/>
+        android:background="@android:color/transparent"
+        android:layout_alignBottom="@+id/btnRight"
+        android:layout_alignLeft="@+id/imageView2"
+        android:layout_alignStart="@+id/imageView2"
+        android:layout_marginBottom="10dp" />
 
     <Button
         android:id="@+id/btnForward"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignTop="@+id/imageView2"
-        android:layout_toEndOf="@+id/btnLeft"
-        android:layout_toRightOf="@+id/btnLeft"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:text=""
         android:visibility="visible"
-        android:background="@android:color/transparent"/>
+        android:background="@android:color/transparent"
+        android:layout_alignTop="@+id/imageView2"
+        android:layout_toEndOf="@+id/btnLeft"
+        android:layout_marginTop="12dp"
+        android:layout_toRightOf="@+id/btnLeft" />
 
     <Button
         android:id="@+id/btnRight"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_below="@+id/btnForward"
-        android:layout_toEndOf="@+id/btnForward"
-        android:layout_toRightOf="@+id/btnForward"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:text=""
         android:visibility="visible"
-        android:background="@android:color/transparent"/>
+        android:background="@android:color/transparent"
+        android:layout_above="@+id/btnBack"
+        android:layout_toRightOf="@+id/btnForward"
+        android:layout_toEndOf="@+id/btnForward" />
 
     <Button
         android:id="@+id/btnBack"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_alignBottom="@+id/imageView2"
-        android:layout_toEndOf="@+id/btnLeft"
-        android:layout_toRightOf="@+id/btnLeft"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
         android:text=""
         android:visibility="visible"
-        android:background="@android:color/transparent"/>
+        android:background="@android:color/transparent"
+        android:layout_above="@+id/textViewStatus"
+        android:layout_toRightOf="@+id/btnLeft"
+        android:layout_toEndOf="@+id/btnLeft" />
 
     <TextView
         android:id="@+id/textViewStatus"
