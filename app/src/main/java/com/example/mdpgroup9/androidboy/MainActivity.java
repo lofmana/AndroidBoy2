@@ -23,6 +23,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -33,8 +34,14 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 
-public class MainActivity extends AppCompatActivity {
+import org.w3c.dom.Text;
+
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
 
     public Menu menu;
@@ -62,6 +69,10 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> chatMessages;
     private BluetoothAdapter bluetoothAdapter;
     private TextView textViewStatus;
+    private TextView textViewXAxis;
+    private TextView textViewYAxis;
+    private TextView textViewZAxis;
+    private CheckBox checkBoxAccelerometer;
 
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_READ = 2;
@@ -80,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
 
     SharedPreferences sharedpreferences;
 
+    private Sensor mySensor;
+    private SensorManager SM;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +139,64 @@ public class MainActivity extends AppCompatActivity {
         Log.d("test", sharedpreferences.getString("COMMAND_A", "A"));
 
 
+        //create sensor manger
+        SM = (SensorManager)getSystemService(SENSOR_SERVICE);
+
+        //accelerate sensor
+        mySensor = SM.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+
+        //Register sensor listener
+        SM.registerListener(this , mySensor , SensorManager.SENSOR_DELAY_NORMAL);
+
+
+
+
+
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+
+        double xAxis = event.values[0];
+        double yAxis = event.values[1];
+        double zAxis = event.values[2];
+
+        textViewXAxis.setText("X :" + event.values[0]);
+        textViewYAxis.setText("Y :" + event.values[1]);
+        textViewZAxis.setText("Z :" + event.values[2]);
+
+
+        if((chatController.getState() == 0) || (chatController.getState() == 1) || (checkBoxAccelerometer.isChecked() == true))
+        {
+            if(xAxis > 6)
+            {
+                sendMessage("R");
+            }
+            else if (xAxis < -6)
+            {
+                sendMessage("L");
+            }
+
+            else if (yAxis > 6)
+            {
+                sendMessage("F");
+            }
+
+            else if (yAxis <-3)
+            {
+                sendMessage("B");
+            }
+        }
+
+
+
+
+
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 
     //Map
@@ -167,6 +238,8 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             Log.e(" poulate map", e.getMessage());
         }
+
+
 
     }
 
@@ -385,7 +458,17 @@ public class MainActivity extends AppCompatActivity {
         btnExplore = (ImageButton) findViewById(R.id.btnExplore);
         btnFast = (ImageButton) findViewById(R.id.btnFast);
         btnA = (ImageButton) findViewById(R.id.btnA);
+<<<<<<< HEAD
         btnB = (ImageButton) findViewById(R.id.btnB);
+=======
+        btnB =(ImageButton) findViewById(R.id.btnB);
+        textViewXAxis = (TextView)findViewById(R.id.textViewXAxis);
+        textViewYAxis = (TextView)findViewById(R.id.textViewYAxis);
+        textViewZAxis = (TextView)findViewById(R.id.textViewZAxis);
+        checkBoxAccelerometer = (CheckBox)findViewById(R.id.checkBoxAccelerometer);
+
+
+>>>>>>> refs/remotes/origin/master
 
 
         //  View btnSend = findViewById(R.id.btn_send);
