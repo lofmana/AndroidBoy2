@@ -174,4 +174,41 @@
         android:layout_toLeftOf="@+id/btnA"
         android:layout_toStartOf="@+id/btnA" />
 
+    <TextView
+        android:id="@+id/textViewXAxis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/btnExplore"
+        android:layout_centerHorizontal="true"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/textViewYAxis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnRight"
+        android:layout_alignLeft="@+id/textViewXAxis"
+        android:layout_alignStart="@+id/textViewXAxis"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/textViewZAxis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/btnB"
+        android:layout_alignLeft="@+id/textViewYAxis"
+        android:layout_alignStart="@+id/textViewYAxis"
+        android:layout_marginBottom="13dp"
+        android:text="TextView" />
+
+    <CheckBox
+        android:id="@+id/checkBoxAccelerometer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textViewStatus"
+        android:layout_alignBottom="@+id/textViewStatus"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:text="Use Accelerometer" />
+
 </RelativeLayout>
