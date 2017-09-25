@@ -44,7 +44,6 @@ import org.w3c.dom.Text;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
 
-
     public Menu menu;
 
     Handler repeatedHandler = new Handler();
@@ -81,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public static final int MESSAGE_DEVICE_OBJECT = 4;
     public static final int MESSAGE_TOAST = 5;
     public static final String DEVICE_OBJECT = "device_name";
-    public static String preDevice ;
+    public static String preDevice;
 
     private static final int REQUEST_ENABLE_BLUETOOTH = 1;
     private ChatController chatController;
@@ -90,13 +89,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     List<MapGrid> gridList = new ArrayList<MapGrid>();
 
 
-
-
     SharedPreferences sharedpreferences;
 
     private Sensor mySensor;
     private SensorManager SM;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,32 +113,30 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         btnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(btnConnect.getText() == "Disconnect")
-                {
+                if (btnConnect.getText() == "Disconnect") {
                     chatController.stop();
-                }
-                else if(btnConnect.getText() == "Connect") {
+                } else if (btnConnect.getText() == "Connect") {
                     showPrinterPickDialog();
                 }
             }
         });
 
-       // set chat adapter
-         chatMessages = new ArrayList<>();
-          chatAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, chatMessages);
+        // set chat adapter
+        chatMessages = new ArrayList<>();
+        chatAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, chatMessages);
 //        listView.setAdapter(chatAdapter);
         buttonFunctions();
         populateMap();
 
 
-        sharedpreferences = getSharedPreferences("COMMANDS" , MODE_PRIVATE);
-        String commandA = sharedpreferences.getString("COMMAND_A" , "A");
-        String commandB = sharedpreferences.getString("COMMAND_B" , "B");
+        sharedpreferences = getSharedPreferences("COMMANDS", MODE_PRIVATE);
+        String commandA = sharedpreferences.getString("COMMAND_A", "A");
+        String commandB = sharedpreferences.getString("COMMAND_B", "B");
 
         //editCommandA.setText(commandA);
-       // editCommandB.setText(commandB);
+        // editCommandB.setText(commandB);
 
-        Log.d("test" , sharedpreferences.getString("COMMAND_A" , "A"));
+        Log.d("test", sharedpreferences.getString("COMMAND_A", "A"));
 
 
         //create sensor manger
@@ -208,28 +202,39 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     //Map
     GridView grid;
 
-    private void populateMap(){
-        try{
+    private void populateMap() {
+        try {
             grid = (GridView) findViewById(R.id.gridView);
             GridAdapter adapter = null;
             MapGrid mapGrid = null;
-            gridList =new ArrayList<MapGrid>();
-            for (int i=0;i<20;i++){
-                for (int k=0; k<15; k++){
-                    mapGrid = new MapGrid(i,k,"");
+            gridList = new ArrayList<MapGrid>();
+            for (int i = 0; i < 20; i++) {
+                for (int k = 0; k < 15; k++) {
+                    mapGrid = new MapGrid(i, k, "");
                     gridList.add(mapGrid);
                 }
             }
-            adapter = new GridAdapter(this,R.layout.map_adapter,gridList);
+            adapter = new GridAdapter(this, R.layout.map_adapter, gridList);
             grid.setAdapter(adapter);
             grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    view.setBackgroundColor(Color.GREEN);
-
+                    MapGrid object = gridList.get(position);
+                    int col = object.getBg();
+                    if (col == Color.GREEN) {
+                        view.setBackgroundColor(Color.parseColor("#C0C0C0"));
+                        object.setBg(Color.parseColor("#C0C0C0"));
+                    } else {
+                        view.setBackgroundColor(Color.GREEN);
+                        object.setBg(Color.GREEN);
+                    }
+                    gridList.set(position, object);
+                    int xpos = position % 15;
+                    int ypos = position / 15;
+                    Toast.makeText(getBaseContext(), "X:" + xpos + " Y:" + ypos, Toast.LENGTH_SHORT).show();
                 }
             });
-            Toast.makeText(this,"Map has been generated",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Map has been generated", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
             Log.e(" poulate map", e.getMessage());
         }
@@ -243,8 +248,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         this.menu = menu;
 
 
-        getMenuInflater().inflate(R.menu.settings,menu);
-        getMenuInflater().inflate(R.menu.main,menu);
+        getMenuInflater().inflate(R.menu.waypoint_coordinates, menu);
+        getMenuInflater().inflate(R.menu.settings, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
+
 
 
 
@@ -256,25 +263,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.btnScan:
-                if((chatController.getState() == 0) || (chatController.getState() == 1))
-                {
+                if ((chatController.getState() == 0) || (chatController.getState() == 1)) {
                     showPrinterPickDialog();
 
 
-                }
-
-                else if ((chatController.getState() == 2) || (chatController.getState() == 3))
-                {
+                } else if ((chatController.getState() == 2) || (chatController.getState() == 3)) {
                     chatController.stop();
                     menu.findItem(R.id.btnScan).setIcon(R.drawable.ic_bluetooth_black_24dp);
                 }
                 return true;
 
             case R.id.btnSettings:
-
-
                 showSettings();
+                return true;
 
+            case R.id.btnCompass:
+                showCompass();
+                return true;
 
 
             default:
@@ -285,7 +290,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         }
     }
-
 
 
     private Handler handler = new Handler(new Handler.Callback() {
@@ -327,9 +331,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     readMessage = statusValidation(readMessage);
                     tv.setText(readMessage);
 
-                 //   chatMessages.add(connectingDevice.getName() + ":  " + statusValidation(readMessage));
-                //    Log.d("test" , "2" + readMessage);
-                  //  chatAdapter.notifyDataSetChanged();
+                    //   chatMessages.add(connectingDevice.getName() + ":  " + statusValidation(readMessage));
+                    //    Log.d("test" , "2" + readMessage);
+                    //  chatAdapter.notifyDataSetChanged();
                     break;
                 case MESSAGE_DEVICE_OBJECT:
                     connectingDevice = msg.getData().getParcelable(DEVICE_OBJECT);
@@ -446,7 +450,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         btnConnect = (Button) findViewById(R.id.btn_connect);
         // listView = (ListView) findViewById(R.id.list);
         inputLayout = (TextInputLayout) findViewById(R.id.input_layout);
-        tv = (TextView)findViewById(R.id.textViewStatus);
+        tv = (TextView) findViewById(R.id.textViewStatus);
         btnForward = (Button) findViewById(R.id.btnForward);
         btnBack = (Button) findViewById(R.id.btnBack);
         btnLeft = (Button) findViewById(R.id.btnLeft);
@@ -454,6 +458,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         btnExplore = (ImageButton) findViewById(R.id.btnExplore);
         btnFast = (ImageButton) findViewById(R.id.btnFast);
         btnA = (ImageButton) findViewById(R.id.btnA);
+<<<<<<< HEAD
+        btnB = (ImageButton) findViewById(R.id.btnB);
+=======
         btnB =(ImageButton) findViewById(R.id.btnB);
         textViewXAxis = (TextView)findViewById(R.id.textViewXAxis);
         textViewYAxis = (TextView)findViewById(R.id.textViewYAxis);
@@ -461,6 +468,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         checkBoxAccelerometer = (CheckBox)findViewById(R.id.checkBoxAccelerometer);
 
 
+>>>>>>> refs/remotes/origin/master
 
 
         //  View btnSend = findViewById(R.id.btn_send);
@@ -485,7 +493,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         switch (requestCode) {
             case REQUEST_ENABLE_BLUETOOTH:
                 if (resultCode == Activity.RESULT_OK) {
-                    chatController = new ChatController(this, handler , this);
+                    chatController = new ChatController(this, handler, this);
                 } else {
                     Toast.makeText(this, "Bluetooth still disabled, turn off application!", Toast.LENGTH_SHORT).show();
                     finish();
@@ -512,7 +520,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH);
         } else {
-            chatController = new ChatController(this, handler , this);
+            chatController = new ChatController(this, handler, this);
         }
     }
 
@@ -553,12 +561,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     };
 
 
-    private void buttonFunctions()
-    {
-
-
-
-
+    private void buttonFunctions() {
 
 
         btnForward.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
@@ -567,11 +570,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 sendMessage("F");
                 tv.setText("Moving Forward");
             }
-        },this));
-
-
-
-
+        }, this));
 
 
         btnLeft.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
@@ -581,7 +580,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 tv.setText("Turning Left");
             }
-        },this));
+        }, this));
 
 
         btnRight.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
@@ -591,7 +590,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 tv.setText("Turning Right");
             }
-        },this));
+        }, this));
 
 
         btnBack.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
@@ -600,7 +599,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 sendMessage("B");
                 tv.setText("Reversing");
             }
-        },this));
+        }, this));
 
         btnExplore.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
             @Override
@@ -608,76 +607,59 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 sendMessage("E");
                 tv.setText("Exploring");
             }
-        },this));
+        }, this));
 
         btnFast.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendMessage("F");
+                sendMessage("FP");
                 tv.setText("Fastest Path");
             }
-        },this));
+        }, this));
 
 
         btnA.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendMessage(sharedpreferences.getString("COMMAND_A" , "A"));
+                sendMessage(sharedpreferences.getString("COMMAND_A", "A"));
                 tv.setText("Command A");
             }
-        },this));
+        }, this));
 
 
         btnB.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendMessage(sharedpreferences.getString("COMMAND_B" , "B"));
+                sendMessage(sharedpreferences.getString("COMMAND_B", "B"));
                 tv.setText("Command B");
             }
-        },this));
-
+        }, this));
 
 
     }
 
 
-
-    public String statusValidation(String text)
-    {
+    public String statusValidation(String text) {
         String status = "";
 
 
-
-        if (text.equals("{\"status\":\"turning right\"}" )) {
+        if (text.equals("{\"status\":\"turning right\"}")) {
             status = "Turning Right";
-        }
-
-        else  if (text.equals("{\"status\":\"turning left\"}")) {
+        } else if (text.equals("{\"status\":\"turning left\"}")) {
             status = "Turning Left";
-        }
-
-
-        else  if (text.equals("{\"status\":\"moving forward\"}")) {
+        } else if (text.equals("{\"status\":\"moving forward\"}")) {
             status = "Moving Forward";
-        }
-
-        else  if (text.equals("{\"status\":\"reversing\"}")) {
+        } else if (text.equals("{\"status\":\"reversing\"}")) {
             status = "Reversing";
-        }
-
-        else  if (text.equals("{\"status\":\"exploring\"}")) {
+        } else if (text.equals("{\"status\":\"exploring\"}")) {
             status = "Exploring";
-        }
-        else  if (text.equals("{\"status\":\"fastest path\"}")) {
+        } else if (text.equals("{\"status\":\"fastest path\"}")) {
             status = "Fastest Path";
-        }
-
-        else
-        {
+        } else {
             status = text;
         }
 
-        Log.d("command" , text);
+        Log.d("command", text);
 
         return status;
     }
@@ -689,11 +671,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         dialog.setTitle("Settings");
 
 
-        editCommandA = (EditText)dialog.findViewById(R.id.editCommandA);
-        editCommandB = (EditText)dialog.findViewById(R.id.editCommandB);
+        editCommandA = (EditText) dialog.findViewById(R.id.editCommandA);
+        editCommandB = (EditText) dialog.findViewById(R.id.editCommandB);
 
-        editCommandA.setText(sharedpreferences.getString("COMMAND_A" , "A"));
-        editCommandB.setText(sharedpreferences.getString("COMMAND_B" , "B"));
+        editCommandA.setText(sharedpreferences.getString("COMMAND_A", "A"));
+        editCommandB.setText(sharedpreferences.getString("COMMAND_B", "B"));
 
         dialog.findViewById(R.id.cancelButton).setOnClickListener(new View.OnClickListener() {
 
@@ -709,14 +691,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void onClick(View v) {
 
-               SharedPreferences.Editor editor = sharedpreferences.edit();
-                editor.putString("COMMAND_A" , editCommandA.getText().toString());
-                editor.putString("COMMAND_B" , editCommandB.getText().toString());
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putString("COMMAND_A", editCommandA.getText().toString());
+                editor.putString("COMMAND_B", editCommandB.getText().toString());
                 editor.apply();
 
                 dialog.dismiss();
-               // Log.d("test" , sharedpreferences.getString("COMMAND_A" , "A"));
-                Toast.makeText(getBaseContext(), "Settings Saved" , Toast.LENGTH_SHORT ).show();
+                // Log.d("test" , sharedpreferences.getString("COMMAND_A" , "A"));
+                Toast.makeText(getBaseContext(), "Settings Saved", Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -725,6 +707,29 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
     }
+
+
+    private void showCompass()
+    {
+        dialog = new Dialog(this);
+        dialog.setContentView(R.layout.waypoint_coordinates);
+        dialog.setTitle("Coordinates");
+
+        dialog.findViewById(R.id.cancelButton).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+
+
+
+    }
+
+
 
 
 }

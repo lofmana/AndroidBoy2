@@ -7,6 +7,7 @@ public class MapGrid {
     private int posY;
     private String txt;
     private int bg;
+    private boolean check;
 
     public MapGrid(int posX, int posY, String txt){
         //Default start configurations
@@ -14,7 +15,15 @@ public class MapGrid {
         this.posY = posY;
         this.txt = txt;
         //Red
-        this.bg = Color.parseColor("#ff0000");
+        this.bg = Color.parseColor("#C0C0C0");
+    }
+
+    public boolean isCheck() {
+        return check;
+    }
+
+    public void setCheck(boolean check) {
+        this.check = check;
     }
 
     public int getPosX() {
