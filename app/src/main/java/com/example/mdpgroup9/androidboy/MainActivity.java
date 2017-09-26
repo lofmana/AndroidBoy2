@@ -10,6 +10,10 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -34,12 +38,6 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import android.hardware.Sensor;
-import android.hardware.SensorManager;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-
-import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
@@ -170,21 +168,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         {
             if(xAxis > 6)
             {
-                sendMessage("R");
+                sendMessage("L");
             }
             else if (xAxis < -6)
             {
-                sendMessage("L");
+                sendMessage("R");
             }
 
             else if (yAxis > 6)
             {
-                sendMessage("F");
+                sendMessage("B");
             }
 
-            else if (yAxis <-3)
+            else if (yAxis < -6)
             {
-                sendMessage("B");
+                sendMessage("F");
             }
         }
 
@@ -458,17 +456,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         btnExplore = (ImageButton) findViewById(R.id.btnExplore);
         btnFast = (ImageButton) findViewById(R.id.btnFast);
         btnA = (ImageButton) findViewById(R.id.btnA);
-<<<<<<< HEAD
         btnB = (ImageButton) findViewById(R.id.btnB);
-=======
         btnB =(ImageButton) findViewById(R.id.btnB);
         textViewXAxis = (TextView)findViewById(R.id.textViewXAxis);
         textViewYAxis = (TextView)findViewById(R.id.textViewYAxis);
         textViewZAxis = (TextView)findViewById(R.id.textViewZAxis);
         checkBoxAccelerometer = (CheckBox)findViewById(R.id.checkBoxAccelerometer);
-
-
->>>>>>> refs/remotes/origin/master
 
 
         //  View btnSend = findViewById(R.id.btn_send);
