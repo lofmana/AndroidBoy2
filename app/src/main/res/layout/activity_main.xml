@@ -221,4 +221,13 @@
         android:layout_alignParentStart="true"
         android:text="Use Accelerometer" />
 
+    <Button
+        android:id="@+id/btnSetWayPoint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Set WayPoint"
+        android:layout_below="@+id/llgridView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
 </RelativeLayout>

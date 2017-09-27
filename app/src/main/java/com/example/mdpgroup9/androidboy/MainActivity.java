@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private ListView listView;
     private Dialog dialog;
     private TextView tv;
+    private Button btnSetWayPoint;
     private Button btnForward;
     private Button btnLeft;
     private Button btnRight;
@@ -72,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView textViewZAxis;
     private CheckBox checkBoxAccelerometer;
 
+    private boolean boolSetWayPoint = false;
+    private boolean boolExistWayPoint = false;
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_READ = 2;
     public static final int MESSAGE_WRITE = 3;
@@ -219,17 +222,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     MapGrid object = gridList.get(position);
                     int col = object.getBg();
-                    if (col == Color.GREEN) {
-                        view.setBackgroundColor(Color.parseColor("#C0C0C0"));
-                        object.setBg(Color.parseColor("#C0C0C0"));
-                    } else {
-                        view.setBackgroundColor(Color.GREEN);
-                        object.setBg(Color.GREEN);
-                    }
-                    gridList.set(position, object);
                     int xpos = position % 15;
                     int ypos = position / 15;
-                    Toast.makeText(getBaseContext(), "X:" + xpos + " Y:" + ypos, Toast.LENGTH_SHORT).show();
+                    if (col != Color.GREEN && boolSetWayPoint == true && boolExistWayPoint == false ) {
+                        view.setBackgroundColor(Color.GREEN);
+                        object.setBg(Color.GREEN);
+                        boolExistWayPoint = true;
+                        Toast.makeText(getBaseContext(), "X:" + xpos + " Y:" + ypos, Toast.LENGTH_SHORT).show();
+                    } else {
+                        if (col == Color.GREEN) {
+                            boolExistWayPoint = false;
+                            boolSetWayPoint = false;
+                        }
+                        view.setBackgroundColor(Color.parseColor("#C0C0C0"));
+                        object.setBg(Color.parseColor("#C0C0C0"));
+                    }
+                    gridList.set(position, object);
                 }
             });
             Toast.makeText(this, "Map has been generated", Toast.LENGTH_SHORT).show();
@@ -449,6 +457,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // listView = (ListView) findViewById(R.id.list);
         inputLayout = (TextInputLayout) findViewById(R.id.input_layout);
         tv = (TextView) findViewById(R.id.textViewStatus);
+        btnSetWayPoint = (Button) findViewById(R.id.btnSetWayPoint);
         btnForward = (Button) findViewById(R.id.btnForward);
         btnBack = (Button) findViewById(R.id.btnBack);
         btnLeft = (Button) findViewById(R.id.btnLeft);
@@ -555,6 +564,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
     private void buttonFunctions() {
+        btnSetWayPoint.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(boolExistWayPoint==true && boolSetWayPoint==true){
+                    Toast.makeText(getBaseContext(), "Way Point is already set", Toast.LENGTH_SHORT).show();
+                }
+                else if(boolExistWayPoint==false && boolSetWayPoint==false) {
+                    boolSetWayPoint = true;
+                    boolExistWayPoint = false;
+                    Toast.makeText(getBaseContext(), "Select Way Point on the Map", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
 
         btnForward.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
