@@ -26,6 +26,7 @@
             android:horizontalSpacing="1dp"
             android:numColumns="15"
             android:verticalSpacing="1dp" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -229,5 +230,15 @@
         android:layout_below="@+id/llgridView"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <Button
+        android:id="@+id/btnSetRobot"
+        android:layout_width="83dp"
+        android:layout_height="wrap_content"
+        android:text="Set Robot"
+        android:layout_above="@+id/imageView2"
+        android:layout_toRightOf="@+id/linearLayout"
+        android:layout_alignRight="@+id/btn_connect"
+        android:layout_alignEnd="@+id/btn_connect" />
 
 </RelativeLayout>

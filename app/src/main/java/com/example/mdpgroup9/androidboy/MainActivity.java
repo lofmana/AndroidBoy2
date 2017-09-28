@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private ListView listView;
     private Dialog dialog;
     private TextView tv;
+    private Button btnSetRobot;
     private Button btnSetWayPoint;
     private Button btnForward;
     private Button btnLeft;
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView textViewZAxis;
     private CheckBox checkBoxAccelerometer;
 
+    private boolean boolSetRobot = false;
     private boolean boolSetWayPoint = false;
     private boolean boolExistWayPoint = false;
     public static final int MESSAGE_STATE_CHANGE = 1;
@@ -224,10 +226,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     int col = object.getBg();
                     int xpos = position % 15;
                     int ypos = position / 15;
+                    int zpos = position;
+                    sendMessage("X:" + xpos + " Y:" + ypos + " Z:"+ zpos);
                     if (col != Color.GREEN && boolSetWayPoint == true && boolExistWayPoint == false ) {
                         view.setBackgroundColor(Color.GREEN);
                         object.setBg(Color.GREEN);
                         boolExistWayPoint = true;
+                        sendMessage("X:" + xpos + " Y:" + ypos);
                         Toast.makeText(getBaseContext(), "X:" + xpos + " Y:" + ypos, Toast.LENGTH_SHORT).show();
                     } else {
                         if (col == Color.GREEN) {
@@ -237,6 +242,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         view.setBackgroundColor(Color.parseColor("#C0C0C0"));
                         object.setBg(Color.parseColor("#C0C0C0"));
                     }
+                    if (boolSetRobot == true){
+                        view.setBackgroundColor(Color.RED);
+                        object.setBg(Color.RED);
+                        boolSetRobot = false;
+                    }
+
                     gridList.set(position, object);
                 }
             });
@@ -457,6 +468,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // listView = (ListView) findViewById(R.id.list);
         inputLayout = (TextInputLayout) findViewById(R.id.input_layout);
         tv = (TextView) findViewById(R.id.textViewStatus);
+        btnSetRobot = (Button) findViewById(R.id.btnSetRobot);
         btnSetWayPoint = (Button) findViewById(R.id.btnSetWayPoint);
         btnForward = (Button) findViewById(R.id.btnForward);
         btnBack = (Button) findViewById(R.id.btnBack);
@@ -564,6 +576,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
     private void buttonFunctions() {
+        btnSetRobot.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(boolSetRobot==false){
+                    Toast.makeText(getBaseContext(),"Choose Robot Position",Toast.LENGTH_SHORT).show();
+                    boolSetRobot = true;
+                }
+            }
+        });
+
         btnSetWayPoint.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
