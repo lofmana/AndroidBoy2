@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -35,6 +34,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -52,6 +54,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private ListView listView;
     private Dialog dialog;
     private TextView tv;
+    private Button btnRefreshMap;
+    private Button btnSelAutoManual;
     private Button btnSetRobot;
     private Button btnSetWayPoint;
     private Button btnForward;
@@ -74,9 +78,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView textViewZAxis;
     private CheckBox checkBoxAccelerometer;
 
+    public boolean AUTO = false; //Auto map
+    public String last_status; //Map status
     private boolean boolSetRobot = false;
     private boolean boolSetWayPoint = false;
     private boolean boolExistWayPoint = false;
+    public int setRobotPOS = 271;
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_READ = 2;
     public static final int MESSAGE_WRITE = 3;
@@ -90,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private BluetoothDevice connectingDevice;
     private ArrayAdapter<String> discoveredDevicesAdapter;
     List<MapGrid> gridList = new ArrayList<MapGrid>();
-
+    GridAdapter adapter;
 
     SharedPreferences sharedpreferences;
 
@@ -208,7 +215,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void populateMap() {
         try {
             grid = (GridView) findViewById(R.id.gridView);
-            GridAdapter adapter = null;
             MapGrid mapGrid = null;
             gridList = new ArrayList<MapGrid>();
             for (int i = 0; i < 20; i++) {
@@ -218,6 +224,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
             }
             adapter = new GridAdapter(this, R.layout.map_adapter, gridList);
+            setRobot(setRobotPOS);
             grid.setAdapter(adapter);
             grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -227,39 +234,121 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     int xpos = position % 15;
                     int ypos = position / 15;
                     int zpos = position;
-                    sendMessage("X:" + xpos + " Y:" + ypos + " Z:"+ zpos);
-                    if (col != Color.GREEN && boolSetWayPoint == true && boolExistWayPoint == false ) {
-                        view.setBackgroundColor(Color.GREEN);
-                        object.setBg(Color.GREEN);
+                    sendMessage("X:" + xpos + " Y:" + ypos + " Z:" + zpos);
+                    if (col != R.color.Green && boolSetWayPoint == true && boolExistWayPoint == false) {
+                        view.setBackgroundResource(R.color.Green);
+                        object.setBg(R.color.Green);
                         boolExistWayPoint = true;
                         sendMessage("X:" + xpos + " Y:" + ypos);
                         Toast.makeText(getBaseContext(), "X:" + xpos + " Y:" + ypos, Toast.LENGTH_SHORT).show();
+                        gridList.set(position, object);
                     } else {
-                        if (col == Color.GREEN) {
+                        if (col == R.color.Green) {
                             boolExistWayPoint = false;
                             boolSetWayPoint = false;
+                            view.setBackgroundResource(R.color.Silver);
+                            object.setBg(R.color.Silver);
+                            gridList.set(position, object);
                         }
-                        view.setBackgroundColor(Color.parseColor("#C0C0C0"));
-                        object.setBg(Color.parseColor("#C0C0C0"));
-                    }
-                    if (boolSetRobot == true){
-                        view.setBackgroundColor(Color.RED);
-                        object.setBg(Color.RED);
-                        boolSetRobot = false;
-                    }
 
-                    gridList.set(position, object);
+                    }
+                    if (boolSetRobot == true) {
+                        if ((position % 15 == 0) || (position % 15 == 14) || (position >= 0 && position <= 14) || (position >= 285 && position <= 299)) {
+                            Toast.makeText(getBaseContext(), "Robot position not allowed", Toast.LENGTH_SHORT).show();
+                        } else {
+                            if (setRobotPOS != -1) {
+                                resetRobot(setRobotPOS);
+                            }
+                            setRobot(position);
+                            setRobotPOS = position;
+                        }
+                    }
                 }
             });
             Toast.makeText(this, "Map has been generated", Toast.LENGTH_SHORT).show();
         } catch (Exception e) {
-            Log.e(" poulate map", e.getMessage());
+            Log.e(" populate map", e.getMessage());
         }
 
 
 
     }
 
+    public void setRobot(int zpos){
+        MapGrid object = gridList.get(zpos);
+        object.setBg(R.color.Red);
+        gridList.set(zpos, object);
+        int idx = zpos - 15;
+        object = gridList.get(idx);
+        object.setBg(R.color.Yellow);
+        gridList.set(idx, object);
+        idx = zpos + 15;
+        object = gridList.get(idx);
+        object.setBg(R.color.Red);
+        gridList.set(idx, object);
+        idx = (zpos-1) + 15;
+        object = gridList.get(idx);
+        object.setBg(R.color.Red);
+        gridList.set(idx, object);
+        idx = (zpos-1) - 15;
+        object = gridList.get(idx);
+        object.setBg(R.color.Red);
+        gridList.set(idx, object);
+        idx = (zpos+1) + 15;
+        object = gridList.get(idx);
+        object.setBg(R.color.Red);
+        gridList.set(idx, object);
+        idx = (zpos+1) - 15;
+        object = gridList.get(idx);
+        object.setBg(R.color.Red);
+        gridList.set(idx, object);
+        idx = zpos+1;
+        object = gridList.get(idx);
+        object.setBg(R.color.Red);
+        gridList.set(idx, object);
+        idx = zpos-1;
+        object = gridList.get(idx);
+        object.setBg(R.color.Red);
+        gridList.set(idx, object);
+
+        adapter.notifyDataSetChanged();
+        boolSetRobot = false;
+    }
+
+    public void resetRobot(int zpos){
+        if (adapter!= null) {
+            MapGrid object = gridList.get(zpos);
+            object.setBg(R.color.Silver);
+            gridList.set(zpos, object);
+            int idx = zpos - 15;
+            object = gridList.get(idx);
+            object.setBg(R.color.Silver);
+            idx = zpos + 15;
+            object = gridList.get(idx);
+            object.setBg(R.color.Silver);
+            idx = (zpos - 1) + 15;
+            object = gridList.get(idx);
+            object.setBg(R.color.Silver);
+            idx = (zpos - 1) - 15;
+            object = gridList.get(idx);
+            object.setBg(R.color.Silver);
+            idx = (zpos + 1) + 15;
+            object = gridList.get(idx);
+            object.setBg(R.color.Silver);
+            idx = (zpos + 1) - 15;
+            object = gridList.get(idx);
+            object.setBg(R.color.Silver);
+            idx = zpos + 1;
+            object = gridList.get(idx);
+            object.setBg(R.color.Silver);
+            idx = zpos - 1;
+            object = gridList.get(idx);
+            object.setBg(R.color.Silver);
+
+            adapter.notifyDataSetChanged();
+        }
+
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.menu = menu;
@@ -468,6 +557,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // listView = (ListView) findViewById(R.id.list);
         inputLayout = (TextInputLayout) findViewById(R.id.input_layout);
         tv = (TextView) findViewById(R.id.textViewStatus);
+        btnSelAutoManual = (Button) findViewById(R.id.btnSelAutoManual);
+        btnRefreshMap = (Button) findViewById(R.id.btnRefreshMap);
         btnSetRobot = (Button) findViewById(R.id.btnSetRobot);
         btnSetWayPoint = (Button) findViewById(R.id.btnSetWayPoint);
         btnForward = (Button) findViewById(R.id.btnForward);
@@ -576,6 +667,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
     private void buttonFunctions() {
+
+        btnSelAutoManual.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (AUTO == false){
+                    AUTO = true;
+                    btnSelAutoManual.setText("Auto");
+                    btnRefreshMap.setVisibility(View.GONE);
+                    refreshMap();
+                }
+                else {
+                    AUTO = false;
+                    btnSelAutoManual.setText("Manual");
+                    btnRefreshMap.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        btnRefreshMap.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendMessage("GRID");
+                refreshMap();
+            }
+        });
+
         btnSetRobot.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -693,7 +809,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         } else if (text.equals("{\"status\":\"fastest path\"}")) {
             status = "Fastest Path";
         } else {
-            status = text;
+            try {
+                JSONObject obj = new JSONObject(text);
+                status = obj.getString("grid");
+                status = toBinary(status);
+                last_status = status;
+                if (AUTO == true) refreshMap();
+                status = "Map String received";
+            } catch(Exception e) {
+
+                status = text;
+            }
         }
 
         Log.d("command", text);
@@ -701,7 +827,29 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         return status;
     }
 
+    private void refreshMap() {
+        MapGrid grid;
+        if (last_status != null) {
+            for (int i = 0; i < last_status.length(); i++) {
+                int s = Integer.parseInt(String.valueOf(last_status.charAt(i)));
+                if (s == 0) {
+                    grid = gridList.get(i);
+                    grid.setBg(R.color.Silver);
+                } else {
+                    grid = gridList.get(i);
+                    grid.setBg(R.color.Brown);
+                }
+                gridList.set(i, grid);
+            }
 
+            if (adapter != null) adapter.notifyDataSetChanged();
+        }
+
+    }
+
+    public static String toBinary(String hex) {
+        return new BigInteger("1" + hex, 16).toString(2).substring(1);
+    }
     private void showSettings() {
         dialog = new Dialog(this);
         dialog.setContentView(R.layout.settings);
