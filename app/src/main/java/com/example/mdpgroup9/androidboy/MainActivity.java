@@ -171,9 +171,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         double yAxis = event.values[1];
         double zAxis = event.values[2];
 
-        textViewXAxis.setText("X :" + event.values[0]);
-        textViewYAxis.setText("Y :" + event.values[1]);
-        textViewZAxis.setText("Z :" + event.values[2]);
+//        textViewXAxis.setText("X :" + event.values[0]);
+//        textViewYAxis.setText("Y :" + event.values[1]);
+//        textViewZAxis.setText("Z :" + event.values[2]);
 
 
         if((chatController.getState() == 0) || (chatController.getState() == 1) || (checkBoxAccelerometer.isChecked() == true))
@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     int xpos = position % 15;
                     int ypos = position / 15;
                     int zpos = position;
-                    sendMessage("X:" + xpos + " Y:" + ypos + " Z:" + zpos);
+                    sendMessage("X:" + xpos + " Y:" + ypos);
                     if (col != R.color.Green && boolSetWayPoint == true && boolExistWayPoint == false) {
                         view.setBackgroundResource(R.color.Green);
                         object.setBg(R.color.Green);
@@ -608,7 +608,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void sendMessage(String message) {
         if (chatController.getState() != ChatController.STATE_CONNECTED) {
-            Toast.makeText(this, "Connection was lost!", Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this, "Connection was lost!", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -796,6 +796,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         String status = "";
 
 
+        try {
+            JSONObject obj = new JSONObject(text);
+            status = obj.getString("grid");
+            Log.d("robotstatus" ,  status);
+            status = toBinary(status);
+
+
+        }
+
+        catch(Exception e) {
+
+            status = text;
+        }
+
+
         if (text.equals("{\"status\":\"turning right\"}")) {
             status = "Turning Right";
         } else if (text.equals("{\"status\":\"turning left\"}")) {
@@ -808,19 +823,39 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             status = "Exploring";
         } else if (text.equals("{\"status\":\"fastest path\"}")) {
             status = "Fastest Path";
-        } else {
+        }
+        else if (status.charAt(0) == '0')
+        {
+            last_status = status;
+            if (AUTO == true) refreshMap();
+            status = "Map String received";
+        }
+        else {
+
+
             try {
                 JSONObject obj = new JSONObject(text);
-                status = obj.getString("grid");
-                status = toBinary(status);
-                last_status = status;
-                if (AUTO == true) refreshMap();
-                status = "Map String received";
-            } catch(Exception e) {
+                status = obj.getString("robotPosition");
+                Log.d("robotstatus" ,  status);
+                //get substring
+                String[] array = status.split(",");
+                String part1 =  array[0];
+                StringBuilder sb = new StringBuilder(part1);
+                sb.deleteCharAt(0);
+                part1 = sb.toString();
+                String part2 = array[1];
+                Log.d("part1" , part1);
+                Log.d("part2" , part2);
+            }
+
+            catch(Exception e) {
 
                 status = text;
             }
         }
+
+
+
 
         Log.d("command", text);
 
