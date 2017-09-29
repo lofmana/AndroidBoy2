@@ -192,29 +192,32 @@
         android:id="@+id/textViewXAxis"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        android:layout_alignTop="@+id/btnExplore"
         android:layout_alignLeft="@+id/textViewYAxis"
-        android:layout_alignStart="@+id/textViewYAxis" />
+        android:layout_alignStart="@+id/textViewYAxis"
+        android:layout_alignTop="@+id/btnExplore"
+        android:text="TextView"
+        android:visibility="invisible" />
 
     <TextView
         android:id="@+id/textViewYAxis"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
         android:layout_above="@+id/btnB"
         android:layout_alignLeft="@+id/textViewZAxis"
-        android:layout_alignStart="@+id/textViewZAxis" />
+        android:layout_alignStart="@+id/textViewZAxis"
+        android:text="TextView"
+        android:visibility="invisible" />
 
     <TextView
         android:id="@+id/textViewZAxis"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
         android:layout_alignBaseline="@+id/btnLeft"
         android:layout_alignBottom="@+id/btnLeft"
+        android:layout_alignEnd="@+id/textViewStatus"
         android:layout_alignRight="@+id/textViewStatus"
-        android:layout_alignEnd="@+id/textViewStatus" />
+        android:text="TextView"
+        android:visibility="invisible" />
 
     <CheckBox
         android:id="@+id/checkBoxAccelerometer"
