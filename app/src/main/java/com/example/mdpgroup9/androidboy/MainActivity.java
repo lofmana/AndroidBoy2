@@ -44,6 +44,11 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
 
+    public int counter = 1;
+    public int back = 1;
+    public int front = 1;
+    public int left = 1;
+    public int right = 1;
     public Menu menu;
 
     Handler repeatedHandler = new Handler();
@@ -83,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private boolean boolSetRobot = false;
     private boolean boolSetWayPoint = false;
     private boolean boolExistWayPoint = false;
-    public int setRobotPOS = 271;
+    public static int setRobotPOS = 255;
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_READ = 2;
     public static final int MESSAGE_WRITE = 3;
@@ -178,23 +183,39 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         if((chatController.getState() == 0) || (chatController.getState() == 1) || (checkBoxAccelerometer.isChecked() == true))
         {
-            if(xAxis > 6)
+
+            if ( ((xAxis > -1) && (xAxis < 1)) && ( (yAxis>9) && (yAxis<10)) )
+            {
+                front = 1;
+                right = 1;
+                back = 1;
+                left = 1;
+            }
+
+            else if((xAxis > 7) && (left == 1))
             {
                 sendMessage("L");
+                left = 0;
             }
-            else if (xAxis < -6)
+            else if ( (xAxis < -7) && (right == 1) )
             {
                 sendMessage("R");
+                right = 0;
+
+
             }
 
-            else if (yAxis > 6)
+            else if ((zAxis < -4) && (back == 1))
             {
                 sendMessage("B");
+                back = 0;
+
             }
 
-            else if (yAxis < -6)
+            else if ((zAxis > 9) && (front == 1))
             {
                 sendMessage("F");
+                front = 0;
             }
         }
 
@@ -234,14 +255,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     int xpos = position % 15;
                     int ypos = position / 15;
                     int zpos = position;
-                    sendMessage("X:" + xpos + " Y:" + ypos);
+                    sendMessage("X:" + xpos + " Y:" + ypos +" Z:"+zpos);
                     if (col != R.color.Green && boolSetWayPoint == true && boolExistWayPoint == false) {
                         view.setBackgroundResource(R.color.Green);
                         object.setBg(R.color.Green);
                         boolExistWayPoint = true;
+                        boolSetWayPoint = false;
                         sendMessage("X:" + xpos + " Y:" + ypos);
                         Toast.makeText(getBaseContext(), "X:" + xpos + " Y:" + ypos, Toast.LENGTH_SHORT).show();
                         gridList.set(position, object);
+                        btnSetWayPoint.setBackgroundResource(android.R.drawable.btn_default);
                     } else {
                         if (col == R.color.Green) {
                             boolExistWayPoint = false;
@@ -253,7 +276,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                     }
                     if (boolSetRobot == true) {
-                        if ((position % 15 == 0) || (position % 15 == 14) || (position >= 0 && position <= 14) || (position >= 285 && position <= 299)) {
+                        if ((position % 15 == 13) || (position % 15 == 14) || (position >= 271 && position <= 299)) {
                             Toast.makeText(getBaseContext(), "Robot position not allowed", Toast.LENGTH_SHORT).show();
                         } else {
                             if (setRobotPOS != -1) {
@@ -261,7 +284,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             }
                             setRobot(position);
                             setRobotPOS = position;
+                            btnSetRobot.setBackgroundResource(android.R.drawable.btn_default);
                         }
+
                     }
                 }
             });
@@ -278,35 +303,35 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         MapGrid object = gridList.get(zpos);
         object.setBg(R.color.Red);
         gridList.set(zpos, object);
-        int idx = zpos - 15;
+        int idx = (zpos +1);
         object = gridList.get(idx);
         object.setBg(R.color.Yellow);
         gridList.set(idx, object);
-        idx = zpos + 15;
+        idx = (zpos + 2);
         object = gridList.get(idx);
         object.setBg(R.color.Red);
         gridList.set(idx, object);
-        idx = (zpos-1) + 15;
+        idx = (zpos+15);
         object = gridList.get(idx);
         object.setBg(R.color.Red);
         gridList.set(idx, object);
-        idx = (zpos-1) - 15;
+        idx = (zpos+15) + 1;
         object = gridList.get(idx);
         object.setBg(R.color.Red);
         gridList.set(idx, object);
-        idx = (zpos+1) + 15;
+        idx = (zpos+15) + 2;
         object = gridList.get(idx);
         object.setBg(R.color.Red);
         gridList.set(idx, object);
-        idx = (zpos+1) - 15;
+        idx = (zpos+30);
         object = gridList.get(idx);
         object.setBg(R.color.Red);
         gridList.set(idx, object);
-        idx = zpos+1;
+        idx = (zpos+30)+1;
         object = gridList.get(idx);
         object.setBg(R.color.Red);
         gridList.set(idx, object);
-        idx = zpos-1;
+        idx = (zpos+30)+2;
         object = gridList.get(idx);
         object.setBg(R.color.Red);
         gridList.set(idx, object);
@@ -320,28 +345,28 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             MapGrid object = gridList.get(zpos);
             object.setBg(R.color.Silver);
             gridList.set(zpos, object);
-            int idx = zpos - 15;
+            int idx = (zpos +1);
             object = gridList.get(idx);
             object.setBg(R.color.Silver);
-            idx = zpos + 15;
+            idx = (zpos +2);
             object = gridList.get(idx);
             object.setBg(R.color.Silver);
-            idx = (zpos - 1) + 15;
+            idx = (zpos+15);
             object = gridList.get(idx);
             object.setBg(R.color.Silver);
-            idx = (zpos - 1) - 15;
+            idx = (zpos+15)+1;
             object = gridList.get(idx);
             object.setBg(R.color.Silver);
-            idx = (zpos + 1) + 15;
+            idx = (zpos+15)+2;
             object = gridList.get(idx);
             object.setBg(R.color.Silver);
-            idx = (zpos + 1) - 15;
+            idx = (zpos+30);
             object = gridList.get(idx);
             object.setBg(R.color.Silver);
-            idx = zpos + 1;
+            idx = (zpos+30)+1;
             object = gridList.get(idx);
             object.setBg(R.color.Silver);
-            idx = zpos - 1;
+            idx = (zpos+30)+2;
             object = gridList.get(idx);
             object.setBg(R.color.Silver);
 
@@ -695,23 +720,42 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         btnSetRobot.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(boolSetRobot==false){
+                btnSetRobot.setBackgroundResource(android.R.drawable.btn_default);
+                if(boolSetWayPoint == true){
+                    Toast.makeText(getBaseContext(),"Select your Way Point first dude",Toast.LENGTH_SHORT).show();
+                }
+                else if(boolSetRobot==false && boolSetWayPoint == false){
                     Toast.makeText(getBaseContext(),"Choose Robot Position",Toast.LENGTH_SHORT).show();
                     boolSetRobot = true;
+                    btnSetRobot.setBackgroundResource(R.color.Green);
                 }
+                else if (boolSetRobot = true){
+                    boolSetRobot = false;
+                }
+
+
             }
         });
 
         btnSetWayPoint.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(boolExistWayPoint==true && boolSetWayPoint==true){
+                btnSetWayPoint.setBackgroundResource(android.R.drawable.btn_default);
+                if(boolSetRobot == true){
+                    Toast.makeText(getBaseContext(),"Choose your Set Robot Position first dude",Toast.LENGTH_SHORT).show();
+                }
+                else if(boolExistWayPoint==true){
                     Toast.makeText(getBaseContext(), "Way Point is already set", Toast.LENGTH_SHORT).show();
                 }
+
                 else if(boolExistWayPoint==false && boolSetWayPoint==false) {
                     boolSetWayPoint = true;
                     boolExistWayPoint = false;
                     Toast.makeText(getBaseContext(), "Select Way Point on the Map", Toast.LENGTH_SHORT).show();
+                    btnSetWayPoint.setBackgroundResource(R.color.Green);
+                }
+                else if (boolSetWayPoint){
+                    boolSetWayPoint = false;
                 }
             }
         });
@@ -740,7 +784,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void onClick(View view) {
                 sendMessage("R");
-
                 tv.setText("Turning Right");
             }
         }, this));
@@ -846,6 +889,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 String part2 = array[1];
                 Log.d("part1" , part1);
                 Log.d("part2" , part2);
+                int zpos = ((15*Integer.parseInt(part2))+ Integer.parseInt(part1));
+                resetRobot(setRobotPOS);
+                setRobot(zpos);
+                setRobotPOS = zpos;
             }
 
             catch(Exception e) {
@@ -876,7 +923,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
                 gridList.set(i, grid);
             }
-
+            Log.d("pos" , String.valueOf(setRobotPOS));
+            setRobot(setRobotPOS);
             if (adapter != null) adapter.notifyDataSetChanged();
         }
 
