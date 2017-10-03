@@ -44,6 +44,9 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
 
+    public String direction ="";
+    public String currentDirection = "Front";
+    public String value;
     public int counter = 1;
     public int back = 1;
     public int front = 1;
@@ -303,35 +306,35 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         MapGrid object = gridList.get(zpos);
         object.setBg(R.color.Red);
         gridList.set(zpos, object);
-        int idx = (zpos +1);
+        int idx = (zpos) - 15; //Head Light
         object = gridList.get(idx);
-        object.setBg(R.color.Yellow);
+        object.setBg(R.color.Yellow);//Head Light
         gridList.set(idx, object);
-        idx = (zpos + 2);
-        object = gridList.get(idx);
-        object.setBg(R.color.Red);
-        gridList.set(idx, object);
-        idx = (zpos+15);
+        idx = (zpos + 1);
         object = gridList.get(idx);
         object.setBg(R.color.Red);
         gridList.set(idx, object);
-        idx = (zpos+15) + 1;
+        idx = (zpos - 1);
         object = gridList.get(idx);
         object.setBg(R.color.Red);
         gridList.set(idx, object);
-        idx = (zpos+15) + 2;
+        idx = (zpos + 1) - 15;
         object = gridList.get(idx);
         object.setBg(R.color.Red);
         gridList.set(idx, object);
-        idx = (zpos+30);
+        idx = (zpos + 1) + 15;
         object = gridList.get(idx);
         object.setBg(R.color.Red);
         gridList.set(idx, object);
-        idx = (zpos+30)+1;
+        idx = (zpos - 1) + 15;
         object = gridList.get(idx);
         object.setBg(R.color.Red);
         gridList.set(idx, object);
-        idx = (zpos+30)+2;
+        idx = (zpos - 1) + 15;
+        object = gridList.get(idx);
+        object.setBg(R.color.Red);
+        gridList.set(idx, object);
+        idx = (zpos + 15);
         object = gridList.get(idx);
         object.setBg(R.color.Red);
         gridList.set(idx, object);
@@ -345,28 +348,28 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             MapGrid object = gridList.get(zpos);
             object.setBg(R.color.Silver);
             gridList.set(zpos, object);
-            int idx = (zpos +1);
+            int idx = (zpos + 15);
             object = gridList.get(idx);
             object.setBg(R.color.Silver);
-            idx = (zpos +2);
+            idx = (zpos - 15);
             object = gridList.get(idx);
             object.setBg(R.color.Silver);
-            idx = (zpos+15);
+            idx = (zpos + 1) + 15;
             object = gridList.get(idx);
             object.setBg(R.color.Silver);
-            idx = (zpos+15)+1;
+            idx = (zpos + 1) - 15;
             object = gridList.get(idx);
             object.setBg(R.color.Silver);
-            idx = (zpos+15)+2;
+            idx = (zpos - 1) + 15;
             object = gridList.get(idx);
             object.setBg(R.color.Silver);
-            idx = (zpos+30);
+            idx = (zpos - 1 ) - 15;
             object = gridList.get(idx);
             object.setBg(R.color.Silver);
-            idx = (zpos+30)+1;
+            idx = (zpos - 1);
             object = gridList.get(idx);
             object.setBg(R.color.Silver);
-            idx = (zpos+30)+2;
+            idx = (zpos + 1);
             object = gridList.get(idx);
             object.setBg(R.color.Silver);
 
@@ -766,6 +769,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View view) {
                 sendMessage("F");
                 tv.setText("Moving Forward");
+                direction ="Front";
+//                directionChecker(direction);
             }
         }, this));
 
@@ -794,6 +799,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View view) {
                 sendMessage("B");
                 tv.setText("Reversing");
+                direction ="Reverse";
+//                directionChecker(direction);
             }
         }, this));
 
@@ -996,8 +1003,65 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
     }
+//    public void directionChecker(String direction)
+//    {
+//        Log.d("hihi" , "jjjjj");
+//
+//        if ( (boundaryChecker(setRobotPOS , value)) == true) {
+//            if ( (direction == "Front") && (value != "topBound")) {
+//                resetRobot(setRobotPOS);
+//                setRobot(setRobotPOS - 15);
+//                setRobotPOS = (setRobotPOS - 15);
+//            } else if ( (direction == "Reverse") && (value != "bottomBound")) {
+//                resetRobot(setRobotPOS);
+//                setRobot(setRobotPOS + 15);
+//                setRobotPOS = (setRobotPOS + 15);
+//            }
+//        }
+//        }
+//
+//        public boolean boundaryChecker(int pos , String v1)
+//        {
+//            boolean pass = true;
+//
+//            if ( setRobotPOS <= 14 ) {
+//                Toast.makeText(getBaseContext(), "Out of bounds, no move!!", Toast.LENGTH_SHORT).show();
+//                pass = false;
+//                value = "topBound";
+//            }
+//
+//            else if ( setRobotPOS >= 255 ) {
+//                Toast.makeText(getBaseContext(), "Out of bounds, no move!!", Toast.LENGTH_SHORT).show();
+//                pass = false;
+//                value = "bottomBound";
+//            }
+//
+//            if (setRobotPOS > 14 && setRobotPOS < 255)
+//            {
+//                value = "";
+//            }
+//
+//            if (value == "topBound")
+//            {
+//                pass = true;
+//            }
+//
+//            else if (value == "bottomBound")
+//            {
+//                pass = true;
+//            }
+//
+//
+//
+//            return pass;
+//        }
+//
+//        public void directionChangerRight()
+//        {
+//            if(currentDirection == "Front")
+//            {
+//            }
+//        }
 
+    }
 
-
-
-}
