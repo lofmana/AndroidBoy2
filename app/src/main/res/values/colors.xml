@@ -6,4 +6,8 @@
     <color name="Brown">#A52A2A</color>
     <color name="Silver">#C0C0C0</color>
     <color name="Gold">	#FFD700</color>
+    <color name="Red"> #FF0000</color>
+    <color name="Yellow">#FFFF00</color>
+    <color name="Green">#00FF00</color>
+
 </resources>

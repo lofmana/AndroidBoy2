@@ -1,7 +1,5 @@
 package com.example.mdpgroup9.androidboy;
 
-import android.graphics.Color;
-
 public class MapGrid {
     private int posX;
     private int posY;
@@ -15,7 +13,7 @@ public class MapGrid {
         this.posY = posY;
         this.txt = txt;
         //Red
-        this.bg = Color.parseColor("#C0C0C0");
+        this.bg =R.color.Silver;
     }
 
     public boolean isCheck() {

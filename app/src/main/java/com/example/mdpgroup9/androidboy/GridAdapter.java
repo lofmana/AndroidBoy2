@@ -37,6 +37,8 @@ public class GridAdapter extends ArrayAdapter<MapGrid> {
             convertView.setTag(viewHolder);
         } else
             viewHolder = (ViewHolder) convertView.getTag();
+
+        viewHolder.grid.setBackgroundResource(dataModel.getBg());
         return convertView;
     }
 }
