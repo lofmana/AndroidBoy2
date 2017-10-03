@@ -1097,7 +1097,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //            {
 //                value = "";
 //            }
-//
+////haha
 //            if (value == "topBound")
 //            {
 //                pass = true;
