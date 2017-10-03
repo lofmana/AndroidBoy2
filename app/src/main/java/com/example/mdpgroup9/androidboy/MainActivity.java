@@ -44,7 +44,7 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
 
-    public String direction ="";
+    public String direction ="NORTH";
     public String currentDirection = "Front";
     public String value;
     public int counter = 1;
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private boolean boolSetRobot = false;
     private boolean boolSetWayPoint = false;
     private boolean boolExistWayPoint = false;
-    public static int setRobotPOS = 255;
+    public static int setRobotPOS = 271;
     public static final int MESSAGE_STATE_CHANGE = 1;
     public static final int MESSAGE_READ = 2;
     public static final int MESSAGE_WRITE = 3;
@@ -279,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                     }
                     if (boolSetRobot == true) {
-                        if ((position % 15 == 13) || (position % 15 == 14) || (position >= 271 && position <= 299)) {
+                        if ((position % 15 == 0) || (position % 15 == 14) || (position >= 285 && position <= 299) || (position >= 0 && position <= 14)) {
                             Toast.makeText(getBaseContext(), "Robot position not allowed", Toast.LENGTH_SHORT).show();
                         } else {
                             if (setRobotPOS != -1) {
@@ -326,7 +326,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         object = gridList.get(idx);
         object.setBg(R.color.Red);
         gridList.set(idx, object);
-        idx = (zpos - 1) + 15;
+        idx = (zpos - 1) - 15;
         object = gridList.get(idx);
         object.setBg(R.color.Red);
         gridList.set(idx, object);
@@ -463,7 +463,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     byte[] readBuf = (byte[]) msg.obj;
                     String readMessage = new String(readBuf, 0, msg.arg1);
                     readMessage = statusValidation(readMessage);
+
                     tv.setText(readMessage);
+                    CheckDirection();
 
                     //   chatMessages.add(connectingDevice.getName() + ":  " + statusValidation(readMessage));
                     //    Log.d("test" , "2" + readMessage);
@@ -769,8 +771,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View view) {
                 sendMessage("F");
                 tv.setText("Moving Forward");
-                direction ="Front";
-//                directionChecker(direction);
             }
         }, this));
 
@@ -779,8 +779,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void onClick(View view) {
                 sendMessage("L");
-
                 tv.setText("Turning Left");
+                CheckDirection();
             }
         }, this));
 
@@ -790,6 +790,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View view) {
                 sendMessage("R");
                 tv.setText("Turning Right");
+                CheckDirection();
             }
         }, this));
 
@@ -799,8 +800,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View view) {
                 sendMessage("B");
                 tv.setText("Reversing");
-                direction ="Reverse";
-//                directionChecker(direction);
             }
         }, this));
 
@@ -844,34 +843,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public String statusValidation(String text) {
         String status = "";
-
-
         try {
             JSONObject obj = new JSONObject(text);
             status = obj.getString("grid");
             Log.d("robotstatus" ,  status);
             status = toBinary(status);
-
-
         }
-
         catch(Exception e) {
-
             status = text;
         }
-
-
-        if (text.equals("{\"status\":\"turning right\"}")) {
+        if (text.equals("{\"status\":\"turning right\"}") || (text.equals("R"))) {
             status = "Turning Right";
-        } else if (text.equals("{\"status\":\"turning left\"}")) {
+        } else if (text.equals("{\"status\":\"turning left\"}")|| (text.equals("L"))) {
             status = "Turning Left";
-        } else if (text.equals("{\"status\":\"moving forward\"}")) {
+        } else if (text.equals("{\"status\":\"moving forward\"}")|| (text.equals("F"))) {
             status = "Moving Forward";
-        } else if (text.equals("{\"status\":\"reversing\"}")) {
+        } else if (text.equals("{\"status\":\"reversing\"}")|| (text.equals("B"))) {
             status = "Reversing";
-        } else if (text.equals("{\"status\":\"exploring\"}")) {
+        } else if (text.equals("{\"status\":\"exploring\"}")|| (text.equals("E"))) {
             status = "Exploring";
-        } else if (text.equals("{\"status\":\"fastest path\"}")) {
+        } else if (text.equals("{\"status\":\"fastest path\"}")|| (text.equals("FP"))) {
             status = "Fastest Path";
         }
         else if (status.charAt(0) == '0')
@@ -918,13 +909,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private void refreshMap() {
         MapGrid grid;
+        grid = null;
         if (last_status != null) {
             for (int i = 0; i < last_status.length(); i++) {
                 int s = Integer.parseInt(String.valueOf(last_status.charAt(i)));
                 if (s == 0) {
                     grid = gridList.get(i);
                     grid.setBg(R.color.Silver);
-                } else {
+                }
+                else if (s == 1)
+                    {
                     grid = gridList.get(i);
                     grid.setBg(R.color.Brown);
                 }
@@ -1003,6 +997,69 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
     }
+
+    public void CheckDirection(){
+//        Log.d("any", tv.getText().toString());
+        if(tv.getText().toString().equals("Turning Left") )
+        {
+        switch(direction) {
+            case "NORTH":
+                //change yellow to east
+                LightChecker(-15 , -1);
+                direction = "WEST";
+                break;
+            case "SOUTH":
+                LightChecker(15 , 1);
+                direction = "EAST";
+                break;
+            case "EAST":
+                LightChecker(1 , -15);
+                direction = "NORTH";
+                break;
+            case "WEST":
+                LightChecker(-1 , 15);
+                direction = "SOUTH";
+                break;
+            }
+        }
+        else if (tv.getText().equals("Turning Right")){
+            switch(direction) {
+                case "NORTH":
+                    LightChecker(-15 , 1);
+                    direction = "EAST";
+                    break;
+                case "SOUTH":
+                    LightChecker(15 , -1);
+                    direction = "WEST";
+                    break;
+                case "EAST":
+                    LightChecker(1 , 15);
+                    direction = "SOUTH";
+                    break;
+                case "WEST":
+                    LightChecker(-1 , -15);
+                    direction = "NORTH";
+                    break;
+            }
+        }
+
+        }
+
+    public void LightChecker(int oldlight , int newlight){
+
+        MapGrid object = gridList.get(setRobotPOS);
+        int idx = (setRobotPOS + oldlight);
+        object = gridList.get(idx);
+        object.setBg(R.color.Red);
+        idx = (setRobotPOS + newlight);
+        object = gridList.get(idx);
+        object.setBg(R.color.Yellow);
+        adapter.notifyDataSetChanged();
+
+        }
+    }
+
+
 //    public void directionChecker(String direction)
 //    {
 //        Log.d("hihi" , "jjjjj");
@@ -1050,9 +1107,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //            {
 //                pass = true;
 //            }
-//
-//
-//
 //            return pass;
 //        }
 //
@@ -1062,6 +1116,4 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //            {
 //            }
 //        }
-
-    }
 

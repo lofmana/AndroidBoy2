@@ -6,13 +6,10 @@ package com.example.mdpgroup9.androidboy;
 
 import android.app.Activity;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
-import android.widget.TextView;
 import android.widget.TextView;
 
 
@@ -76,8 +73,8 @@ public class RepeatListener implements OnTouchListener{
                 handler.removeCallbacks(handlerRunnable);
                 downView = null;
 
-                TextView tv = (TextView)this.activity.findViewById(R.id.textViewStatus);
-                tv.setText("Stop");
+//                TextView tv = (TextView)this.activity.findViewById(R.id.textViewStatus);
+//                tv.setText("Stop");
                 break;
             case MotionEvent.ACTION_CANCEL:
                 handler.removeCallbacks(handlerRunnable);
