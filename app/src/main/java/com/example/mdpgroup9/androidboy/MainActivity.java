@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public int left = 1;
     public int right = 1;
     public Menu menu;
+    public int x = 0;
+    public int y = 0;
 
     Handler repeatedHandler = new Handler();
     final Handler handler2 = new Handler();
@@ -70,10 +72,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Button btnLeft;
     private Button btnRight;
     private Button btnBack;
+    private Button btnSaveCor;
     private ImageButton btnExplore;
     private ImageButton btnFast;
     private ImageButton btnA;
     private ImageButton btnB;
+    private EditText editTextEnterX;
+    private EditText editTextEnterY;
     private EditText editCommandA;
     private EditText editCommandB;
     private TextInputLayout inputLayout;
@@ -595,6 +600,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         btnBack = (Button) findViewById(R.id.btnBack);
         btnLeft = (Button) findViewById(R.id.btnLeft);
         btnRight = (Button) findViewById(R.id.btnRight);
+        btnSaveCor = (Button) findViewById(R.id.btnSaveCor);
         btnExplore = (ImageButton) findViewById(R.id.btnExplore);
         btnFast = (ImageButton) findViewById(R.id.btnFast);
         btnA = (ImageButton) findViewById(R.id.btnA);
@@ -845,9 +851,24 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         String status = "";
         try {
             JSONObject obj = new JSONObject(text);
-            status = obj.getString("grid");
-            Log.d("robotstatus" ,  status);
+                status = obj.getString("grid");
+
             status = toBinary(status);
+            Log.d("obs" ,  status);
+last_status = status;
+            //status = swapPosition(status);
+            refreshMap();
+           // Log.d("obs2" ,  status);
+
+
+
+//            StringBuilder input1 = new StringBuilder();
+//            input1.append(status);
+//            input1 = input1.reverse();
+//            input1.toString();
+//
+//            status = input1.toString();
+
         }
         catch(Exception e) {
             status = text;
@@ -867,8 +888,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         else if (status.charAt(0) == '0')
         {
-            last_status = status;
-            if (AUTO == true) refreshMap();
+            last_status = status;//todo replace w status.substring(1) & always ask for send in extra 0 at start
+            if (AUTO == true) refreshMap(); //todo remove manual needed
             status = "Map String received";
         }
         else {
@@ -910,19 +931,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void refreshMap() {
         MapGrid grid;
         grid = null;
+        int diff = 285;
         if (last_status != null) {
             for (int i = 0; i < last_status.length(); i++) {
-                int s = Integer.parseInt(String.valueOf(last_status.charAt(i)));
+                if (i > 0 && i % 15 == 0) diff -= (15);
+                int pos = diff + (i % 15);
+                 int s = Integer.parseInt(String.valueOf(last_status.charAt(i)));
                 if (s == 0) {
-                    grid = gridList.get(i);
+                    grid = gridList.get(pos);
                     grid.setBg(R.color.Silver);
+
+                    Log.e("s=0" , String.valueOf(pos));
                 }
                 else if (s == 1)
                     {
-                    grid = gridList.get(i);
+                    grid = gridList.get(pos);
                     grid.setBg(R.color.Brown);
+                        Log.e("s=1" , String.valueOf(pos));
                 }
-                gridList.set(i, grid);
+                gridList.set(pos, grid);
             }
             Log.d("pos" , String.valueOf(setRobotPOS));
             setRobot(setRobotPOS);
@@ -991,13 +1018,29 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 dialog.dismiss();
             }
         });
+        dialog.findViewById(R.id.btnSaveCor).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                String value = editTextEnterX.getText().toString();
+                x = Integer.parseInt(value);
+                String value2 = editTextEnterY.getText().toString();
+                y = Integer.parseInt(value2);
+                int zpos = (15*y) + x;
+                manualSetWayPoint(zpos);
+            }
+        });
 
         dialog.show();
 
 
 
     }
-
+    public void manualSetWayPoint(int position){
+        MapGrid object = gridList.get(position);
+        object.setBg(R.color.Green);
+        gridList.set(position,object);
+    }
     public void CheckDirection(){
 //        Log.d("any", tv.getText().toString());
         if(tv.getText().toString().equals("Turning Left") )
@@ -1057,6 +1100,33 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         adapter.notifyDataSetChanged();
 
         }
+
+        public String swapPosition(String status)
+        {
+
+            Log.d("testbefore" ,  status);
+
+            for (int i=0 ; i<300 ; i++)
+            {
+                if(status.charAt(i) == '1')
+                {
+                    if( i >= 0 || i <= 14 )
+                    {
+
+                        StringBuilder myString = new StringBuilder(status);
+                        myString.setCharAt(i, '0');
+                        myString.setCharAt(i+285 , '1');
+                        status = myString.toString();
+                        Log.d("testafter" ,  status);
+                    }
+                }
+            }
+
+            Log.d("testfinal" ,  status);
+            return status;
+
+        }
+
     }
 
 

@@ -28,17 +28,17 @@
         android:layout_alignStart="@+id/imageView4" />
 
     <EditText
-        android:id="@+id/editCommandB"
+        android:id="@+id/editTextEnterY"
         android:layout_width="400dp"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/imageView5"
-        android:layout_alignLeft="@+id/editCommandA"
-        android:layout_alignStart="@+id/editCommandA"
         android:hint="Enter Y Co-ordinate"
-        android:inputType="text" />
+        android:inputType="text"
+        android:layout_above="@+id/btnSaveCor"
+        android:layout_alignLeft="@+id/editTextEnterX"
+        android:layout_alignStart="@+id/editTextEnterX" />
 
     <EditText
-        android:id="@+id/editCommandA"
+        android:id="@+id/editTextEnterX"
         android:layout_width="400dp"
         android:layout_height="wrap_content"
         android:layout_above="@+id/imageView5"
@@ -55,7 +55,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Save Settings"
-        android:layout_marginTop="39dp"
+        android:layout_marginTop="40dp"
         android:layout_below="@+id/imageView5"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
