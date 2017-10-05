@@ -346,6 +346,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         adapter.notifyDataSetChanged();
         boolSetRobot = false;
+        direction = "NORTH";
     }
 
     public void resetRobot(int zpos){
@@ -647,13 +648,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
            // Toast.makeText(this, "Connection was lost!", Toast.LENGTH_SHORT).show();
             return;
         }
-
         if (message.length() > 0) {
             byte[] send = message.getBytes();
             chatController.write(send);
         }
     }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -908,7 +907,7 @@ last_status = status;
                 String part2 = array[1];
                 Log.d("part1" , part1);
                 Log.d("part2" , part2);
-                int zpos = ((15*Integer.parseInt(part2))+ Integer.parseInt(part1));
+                int zpos = ((15*(swapYvalue(Integer.parseInt(part2))))+ Integer.parseInt(part1));
                 resetRobot(setRobotPOS);
                 setRobot(zpos);
                 setRobotPOS = zpos;
@@ -956,6 +955,13 @@ last_status = status;
             if (adapter != null) adapter.notifyDataSetChanged();
         }
 
+    }
+
+    public int swapYvalue(int y)
+    {
+        int value = 19;
+        y = value - y;
+        return y;
     }
 
     public static String toBinary(String hex) {
