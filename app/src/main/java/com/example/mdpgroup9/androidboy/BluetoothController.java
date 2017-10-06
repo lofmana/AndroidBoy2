@@ -1,18 +1,3 @@
-/*
- * Copyright (C) 2009 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package com.example.mdpgroup9.androidboy;
 
@@ -22,18 +7,16 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.widget.Button;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
-public class ChatController {
+public class BluetoothController {
     public Activity activity;
     private static final String APP_NAME = "AndroidBoy";
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
@@ -50,7 +33,7 @@ public class ChatController {
     static final int STATE_CONNECTING = 2;
     static final int STATE_CONNECTED = 3;
 
-    public ChatController(Context context, Handler handler , Activity _activity) {
+    public BluetoothController(Context context, Handler handler , Activity _activity) {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         state = STATE_NONE;
 
@@ -184,7 +167,7 @@ public class ChatController {
         handler.sendMessage(msg);
 
         // Start the service over to restart listening mode
-        ChatController.this.start();
+        BluetoothController.this.start();
     }
 
     private void connectionLost() {
@@ -195,7 +178,7 @@ public class ChatController {
         handler.sendMessage(msg);
 
         // Start the service over to restart listening mode
-        ChatController.this.start();
+        BluetoothController.this.start();
 
     }
 
@@ -225,7 +208,7 @@ public class ChatController {
 
                 // If a connection was accepted
                 if (socket != null) {
-                    synchronized (ChatController.this) {
+                    synchronized (BluetoothController.this) {
                         switch (state) {
                             case STATE_LISTEN:
                             case STATE_CONNECTING:
@@ -290,7 +273,7 @@ public class ChatController {
             }
 
             // Reset the ConnectThread because we're done
-            synchronized (ChatController.this) {
+            synchronized (BluetoothController.this) {
                 connectThread = null;
             }
 
@@ -343,7 +326,7 @@ public class ChatController {
                 } catch (IOException e) {
                     connectionLost();
                     // Start the service over to restart listening mode
-                    ChatController.this.start();
+                    BluetoothController.this.start();
                     break;
                 }
             }

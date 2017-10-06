@@ -45,9 +45,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
     public String direction ="NORTH";
-    public String currentDirection = "Front";
-    public String value;
-    public int counter = 1;
     public int back = 1;
     public int front = 1;
     public int left = 1;
@@ -61,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private TextView status;
     private Button btnConnect;
-    private ListView listView;
     private Dialog dialog;
     private TextView tv;
     private Button btnRefreshMap;
@@ -106,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public static String preDevice;
 
     private static final int REQUEST_ENABLE_BLUETOOTH = 1;
-    private ChatController chatController;
+    private BluetoothController bluetoothController;
     private BluetoothDevice connectingDevice;
     private ArrayAdapter<String> discoveredDevicesAdapter;
     List<MapGrid> gridList = new ArrayList<MapGrid>();
@@ -137,17 +133,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             @Override
             public void onClick(View view) {
                 if (btnConnect.getText() == "Disconnect") {
-                    chatController.stop();
+                    bluetoothController.stop();
                 } else if (btnConnect.getText() == "Connect") {
                     showPrinterPickDialog();
                 }
             }
         });
 
-        // set chat adapter
         chatMessages = new ArrayList<>();
         chatAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, chatMessages);
-//        listView.setAdapter(chatAdapter);
         buttonFunctions();
         populateMap();
 
@@ -155,10 +149,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sharedpreferences = getSharedPreferences("COMMANDS", MODE_PRIVATE);
         String commandA = sharedpreferences.getString("COMMAND_A", "A");
         String commandB = sharedpreferences.getString("COMMAND_B", "B");
-
-        //editCommandA.setText(commandA);
-        // editCommandB.setText(commandB);
-
         Log.d("test", sharedpreferences.getString("COMMAND_A", "A"));
 
 
@@ -184,12 +174,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         double yAxis = event.values[1];
         double zAxis = event.values[2];
 
-//        textViewXAxis.setText("X :" + event.values[0]);
-//        textViewYAxis.setText("Y :" + event.values[1]);
-//        textViewZAxis.setText("Z :" + event.values[2]);
-
-
-        if((chatController.getState() == 0) || (chatController.getState() == 1) || (checkBoxAccelerometer.isChecked() == true))
+        if((bluetoothController.getState() == 0) || (bluetoothController.getState() == 1) || (checkBoxAccelerometer.isChecked() == true))
         {
 
             if ( ((xAxis > -1) && (xAxis < 1)) && ( (yAxis>9) && (yAxis<10)) )
@@ -403,12 +388,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.btnScan:
-                if ((chatController.getState() == 0) || (chatController.getState() == 1)) {
+                if ((bluetoothController.getState() == 0) || (bluetoothController.getState() == 1)) {
                     showPrinterPickDialog();
 
 
-                } else if ((chatController.getState() == 2) || (chatController.getState() == 3)) {
-                    chatController.stop();
+                } else if ((bluetoothController.getState() == 2) || (bluetoothController.getState() == 3)) {
+                    bluetoothController.stop();
                     menu.findItem(R.id.btnScan).setIcon(R.drawable.ic_bluetooth_black_24dp);
                 }
                 return true;
@@ -423,9 +408,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
             default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-
                 return super.onOptionsItemSelected(item);
 
         }
@@ -439,20 +421,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             switch (msg.what) {
                 case MESSAGE_STATE_CHANGE:
                     switch (msg.arg1) {
-                        case ChatController.STATE_CONNECTED:
+                        case BluetoothController.STATE_CONNECTED:
                             setStatus("Connected to: " + connectingDevice.getName());
 
-//                            btnConnect.setBackgroundColor(Color.RED);
-//                            btnConnect.setText("Disconnect");
                             menu.findItem(R.id.btnScan).setIcon(R.drawable.ic_bluetooth_connected_black_24dp);
-                            //  btnConnect.setEnabled(false);
                             break;
-                        case ChatController.STATE_CONNECTING:
+                        case BluetoothController.STATE_CONNECTING:
                             setStatus("Connecting...");
-                            //   btnConnect.setEnabled(false);
                             break;
-                        case ChatController.STATE_LISTEN:
-                        case ChatController.STATE_NONE:
+                        case BluetoothController.STATE_LISTEN:
+                        case BluetoothController.STATE_NONE:
                             setStatus("Not connected");
                             handler2.postDelayed(new Runnable() {
                                 @Override
@@ -473,9 +451,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     tv.setText(readMessage);
                     CheckDirection();
 
-                    //   chatMessages.add(connectingDevice.getName() + ":  " + statusValidation(readMessage));
-                    //    Log.d("test" , "2" + readMessage);
-                    //  chatAdapter.notifyDataSetChanged();
                     break;
                 case MESSAGE_DEVICE_OBJECT:
                     connectingDevice = msg.getData().getParcelable(DEVICE_OBJECT);
@@ -584,7 +559,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private void connectToDevice(String deviceAddress) {
         bluetoothAdapter.cancelDiscovery();
         BluetoothDevice device = bluetoothAdapter.getRemoteDevice(deviceAddress);
-        chatController.connect(device);
+        bluetoothController.connect(device);
     }
 
     private void findViewsByIds() {
@@ -613,29 +588,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         checkBoxAccelerometer = (CheckBox)findViewById(R.id.checkBoxAccelerometer);
 
 
-        //  View btnSend = findViewById(R.id.btn_send);
-
-//        btnSend.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (inputLayout.getEditText().getText().toString().equals("")) {
-//                    Toast.makeText(MainActivity.this, "Please input some texts", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    //TODO: here
-//                    sendMessage(inputLayout.getEditText().getText().toString());
-//                    inputLayout.getEditText().setText("");
-//                }
-//            }
-//        });
-
-
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_ENABLE_BLUETOOTH:
                 if (resultCode == Activity.RESULT_OK) {
-                    chatController = new ChatController(this, handler, this);
+                    bluetoothController = new BluetoothController(this, handler, this);
                 } else {
                     Toast.makeText(this, "Bluetooth still disabled, turn off application!", Toast.LENGTH_SHORT).show();
                     finish();
@@ -644,13 +603,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     private void sendMessage(String message) {
-        if (chatController.getState() != ChatController.STATE_CONNECTED) {
-           // Toast.makeText(this, "Connection was lost!", Toast.LENGTH_SHORT).show();
+        if (bluetoothController.getState() != BluetoothController.STATE_CONNECTED) {
             return;
         }
         if (message.length() > 0) {
             byte[] send = message.getBytes();
-            chatController.write(send);
+            bluetoothController.write(send);
         }
     }
     @Override
@@ -660,7 +618,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableIntent, REQUEST_ENABLE_BLUETOOTH);
         } else {
-            chatController = new ChatController(this, handler, this);
+            bluetoothController = new BluetoothController(this, handler, this);
         }
     }
 
@@ -668,9 +626,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onResume() {
         super.onResume();
 
-        if (chatController != null) {
-            if (chatController.getState() == ChatController.STATE_NONE) {
-                chatController.start();
+        if (bluetoothController != null) {
+            if (bluetoothController.getState() == BluetoothController.STATE_NONE) {
+                bluetoothController.start();
             }
         }
     }
@@ -678,8 +636,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (chatController != null)
-            chatController.stop();
+        if (bluetoothController != null)
+            bluetoothController.stop();
     }
 
     private final BroadcastReceiver discoveryFinishReceiver = new BroadcastReceiver() {
@@ -855,18 +813,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             status = toBinary(status);
             Log.d("obs" ,  status);
 last_status = status;
-            //status = swapPosition(status);
+
             refreshMap();
-           // Log.d("obs2" ,  status);
-
-
-
-//            StringBuilder input1 = new StringBuilder();
-//            input1.append(status);
-//            input1 = input1.reverse();
-//            input1.toString();
-//
-//            status = input1.toString();
 
         }
         catch(Exception e) {
@@ -887,8 +835,8 @@ last_status = status;
         }
         else if (status.charAt(0) == '0')
         {
-            last_status = status;//todo replace w status.substring(1) & always ask for send in extra 0 at start
-            if (AUTO == true) refreshMap(); //todo remove manual needed
+            last_status = status;
+            if (AUTO == true) refreshMap();
             status = "Map String received";
         }
         else {
@@ -898,7 +846,6 @@ last_status = status;
                 JSONObject obj = new JSONObject(text);
                 status = obj.getString("robotPosition");
                 Log.d("robotstatus" ,  status);
-                //get substring
                 String[] array = status.split(",");
                 String part1 =  array[0];
                 StringBuilder sb = new StringBuilder(part1);
@@ -1135,61 +1082,4 @@ last_status = status;
 
     }
 
-
-//    public void directionChecker(String direction)
-//    {
-//        Log.d("hihi" , "jjjjj");
-//
-//        if ( (boundaryChecker(setRobotPOS , value)) == true) {
-//            if ( (direction == "Front") && (value != "topBound")) {
-//                resetRobot(setRobotPOS);
-//                setRobot(setRobotPOS - 15);
-//                setRobotPOS = (setRobotPOS - 15);
-//            } else if ( (direction == "Reverse") && (value != "bottomBound")) {
-//                resetRobot(setRobotPOS);
-//                setRobot(setRobotPOS + 15);
-//                setRobotPOS = (setRobotPOS + 15);
-//            }
-//        }
-//        }
-//
-//        public boolean boundaryChecker(int pos , String v1)
-//        {
-//            boolean pass = true;
-//
-//            if ( setRobotPOS <= 14 ) {
-//                Toast.makeText(getBaseContext(), "Out of bounds, no move!!", Toast.LENGTH_SHORT).show();
-//                pass = false;
-//                value = "topBound";
-//            }
-//
-//            else if ( setRobotPOS >= 255 ) {
-//                Toast.makeText(getBaseContext(), "Out of bounds, no move!!", Toast.LENGTH_SHORT).show();
-//                pass = false;
-//                value = "bottomBound";
-//            }
-//
-//            if (setRobotPOS > 14 && setRobotPOS < 255)
-//            {
-//                value = "";
-//            }
-////haha
-//            if (value == "topBound")
-//            {
-//                pass = true;
-//            }
-//
-//            else if (value == "bottomBound")
-//            {
-//                pass = true;
-//            }
-//            return pass;
-//        }
-//
-//        public void directionChangerRight()
-//        {
-//            if(currentDirection == "Front")
-//            {
-//            }
-//        }
 
