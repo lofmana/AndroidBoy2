@@ -31,11 +31,12 @@
         android:id="@+id/editTextEnterY"
         android:layout_width="400dp"
         android:layout_height="wrap_content"
-        android:hint="Enter Y Co-ordinate"
-        android:inputType="text"
         android:layout_above="@+id/btnSaveCor"
         android:layout_alignLeft="@+id/editTextEnterX"
-        android:layout_alignStart="@+id/editTextEnterX" />
+        android:layout_alignStart="@+id/editTextEnterX"
+        android:hint="Enter Y Co-ordinate"
+        android:inputType="number"
+        android:text="0" />
 
     <EditText
         android:id="@+id/editTextEnterX"
@@ -47,7 +48,9 @@
         android:layout_toEndOf="@+id/imageView4"
         android:layout_toRightOf="@+id/imageView4"
         android:hint="Enter X Co-ordinate"
-        android:inputType="text" />
+        android:inputType="number"
+        android:text="0"
+       />
 
 
     <Button
