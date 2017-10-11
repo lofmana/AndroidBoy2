@@ -44,7 +44,7 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
 
-    public String direction ="NORTH";
+    public String cur_direction ="NORTH";
     public int back = 1;
     public int front = 1;
     public int left = 1;
@@ -293,12 +293,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public void setRobot(int zpos){
+
         MapGrid object = gridList.get(zpos);
         object.setBg(R.color.Red);
         gridList.set(zpos, object);
         int idx = (zpos) - 15; //Head Light
         object = gridList.get(idx);
-        object.setBg(R.color.Yellow);//Head Light
+        object.setBg(R.color.Red);//Head Light
         gridList.set(idx, object);
         idx = (zpos + 1);
         object = gridList.get(idx);
@@ -329,9 +330,34 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         object.setBg(R.color.Red);
         gridList.set(idx, object);
 
+        if (cur_direction =="NORTH"){
+            idx = (zpos) - 15; //Head Light
+            object = gridList.get(idx);
+            object.setBg(R.color.Yellow);//Head Light
+            gridList.set(idx, object);
+        }
+        else if (cur_direction =="SOUTH"){
+            idx =(zpos) + 15;
+            object = gridList.get(idx);
+            object.setBg(R.color.Yellow);//Head Light
+            gridList.set(idx, object);
+        }
+        else if (cur_direction =="EAST"){
+            idx = (zpos)+1;
+            object = gridList.get(idx);
+            object.setBg(R.color.Yellow);//Head Light
+            gridList.set(idx, object);
+        }
+        else if (cur_direction =="WEST"){
+            idx =(zpos) - 1;
+            object = gridList.get(idx);
+            object.setBg(R.color.Yellow);//Head Light
+            gridList.set(idx, object);
+        }
+
+
         adapter.notifyDataSetChanged();
         boolSetRobot = false;
-        direction = "NORTH";
     }
 
     public void resetRobot(int zpos){
@@ -734,6 +760,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View view) {
                 sendMessage("F");
                 tv.setText("Moving Forward");
+                CheckDirection();
             }
         }, this));
 
@@ -963,6 +990,8 @@ last_status = status;
         dialog = new Dialog(this);
         dialog.setContentView(R.layout.waypoint_coordinates);
         dialog.setTitle("Coordinates");
+        editTextEnterX = (EditText) dialog.findViewById(R.id.editTextEnterX);
+        editTextEnterY = (EditText) dialog.findViewById(R.id.editTextEnterY);
 
         dialog.findViewById(R.id.cancelButton).setOnClickListener(new View.OnClickListener() {
 
@@ -994,62 +1023,110 @@ last_status = status;
         object.setBg(R.color.Green);
         gridList.set(position,object);
     }
-    public void CheckDirection(){
+    public void CheckDirection() {
 //        Log.d("any", tv.getText().toString());
-        if(tv.getText().toString().equals("Turning Left") )
-        {
-        switch(direction) {
-            case "NORTH":
-                //change yellow to east
-                LightChecker(-15 , -1);
-                direction = "WEST";
-                break;
-            case "SOUTH":
-                LightChecker(15 , 1);
-                direction = "EAST";
-                break;
-            case "EAST":
-                LightChecker(1 , -15);
-                direction = "NORTH";
-                break;
-            case "WEST":
-                LightChecker(-1 , 15);
-                direction = "SOUTH";
-                break;
-            }
-        }
-        else if (tv.getText().equals("Turning Right")){
-            switch(direction) {
+        if (tv.getText().toString().equals("Turning Left")) {
+            switch (cur_direction) {
                 case "NORTH":
-                    LightChecker(-15 , 1);
-                    direction = "EAST";
+                    //change yellow to east
+                    LightChecker(-15, -1);
+                    cur_direction = "WEST";
                     break;
                 case "SOUTH":
-                    LightChecker(15 , -1);
-                    direction = "WEST";
+                    LightChecker(15, 1);
+                    cur_direction = "EAST";
                     break;
                 case "EAST":
-                    LightChecker(1 , 15);
-                    direction = "SOUTH";
+                    LightChecker(1, -15);
+                    cur_direction = "NORTH";
                     break;
                 case "WEST":
-                    LightChecker(-1 , -15);
-                    direction = "NORTH";
+                    LightChecker(-1, 15);
+                    cur_direction = "SOUTH";
                     break;
             }
-        }
+        } else if (tv.getText().equals("Turning Right")) {
+            switch (cur_direction) {
+                case "NORTH":
+                    LightChecker(-15, 1);
+                    cur_direction = "EAST";
+                    break;
+                case "SOUTH":
+                    LightChecker(15, -1);
+                    cur_direction = "WEST";
+                    break;
+                case "EAST":
+                    LightChecker(1, 15);
+                    cur_direction = "SOUTH";
+                    break;
+                case "WEST":
+                    LightChecker(-1, -15);
+                    cur_direction = "NORTH";
+                    break;
+            }
+
+        } else if (tv.getText().equals("Moving Forward")) {
+            MapGrid object = gridList.get(setRobotPOS);
+            switch (cur_direction) {
+                case "NORTH":
+                    if(setRobotPOS >= 15 && setRobotPOS <= 29){
+                        Toast.makeText(getBaseContext(), "Not allowed to move out of map", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        resetRobot(setRobotPOS);
+                        setRobotPOS -= 15;
+                        setRobot(setRobotPOS);
+                    }
+                    break;
+                case "SOUTH":
+                    if(setRobotPOS >= 270 && setRobotPOS <= 284){
+                        Toast.makeText(getBaseContext(), "Not allowed to move out of map", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        resetRobot(setRobotPOS);
+                        setRobotPOS += 15;
+                        setRobot(setRobotPOS);
+                    }
+                    break;
+                case "EAST":
+                    if (setRobotPOS%15 == 13){
+                        Toast.makeText(getBaseContext(), "Not allowed to move out of map", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        resetRobot(setRobotPOS);
+                        setRobotPOS += 1;
+                        setRobot(setRobotPOS);
+                    }
+                    break;
+                case "WEST":
+                    if(setRobotPOS%15 ==1){
+                        Toast.makeText(getBaseContext(), "Not allowed to move out of map", Toast.LENGTH_SHORT).show();
+                    }
+                    else{
+                        resetRobot(setRobotPOS);
+                        setRobotPOS -= 1;
+                        setRobot(setRobotPOS);
+                    }
+                    break;
+            }
 
         }
+    }
 
     public void LightChecker(int oldlight , int newlight){
 
         MapGrid object = gridList.get(setRobotPOS);
-        int idx = (setRobotPOS + oldlight);
+        int idx = (setRobotPOS - 15);
+        object = gridList.get(idx);
+        object.setBg(R.color.Red);
+        gridList.set(idx, object);
+        idx = (setRobotPOS + oldlight);
         object = gridList.get(idx);
         object.setBg(R.color.Red);
         idx = (setRobotPOS + newlight);
         object = gridList.get(idx);
         object.setBg(R.color.Yellow);
+
         adapter.notifyDataSetChanged();
 
         }
