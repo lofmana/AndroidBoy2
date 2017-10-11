@@ -27,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView textViewYAxis;
     private TextView textViewZAxis;
     private CheckBox checkBoxAccelerometer;
+    private CheckBox checkBoxEvil;
 
     public boolean AUTO = false; //Auto map
     public String last_status; //Map status
@@ -616,6 +618,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         textViewYAxis = (TextView)findViewById(R.id.textViewYAxis);
         textViewZAxis = (TextView)findViewById(R.id.textViewZAxis);
         checkBoxAccelerometer = (CheckBox)findViewById(R.id.checkBoxAccelerometer);
+        checkBoxEvil = (CheckBox)findViewById(R.id.checkBoxEvil);
 
 
     }
@@ -690,6 +693,33 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
 
     private void buttonFunctions() {
+
+
+        checkBoxEvil.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+                                               @Override
+                                               public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+
+                                                   if(checkBoxEvil.isChecked() == true)
+                                                   {
+                                                       btnForward.setEnabled(false);
+                                                       btnBack.setEnabled(false);
+                                                       btnLeft.setEnabled(false);
+                                                       btnRight.setEnabled(false);
+
+                                                   }
+
+                                                   else
+                                                   {
+                                                       btnForward.setEnabled(true);
+                                                       btnBack.setEnabled(true);
+                                                       btnLeft.setEnabled(true);
+                                                       btnRight.setEnabled(true);
+                                                   }
+                                               }
+                                           }
+        );
+
 
         btnSelAutoManual.setOnClickListener(new OnClickListener() {
             @Override
@@ -831,6 +861,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 tv.setText("Command B");
             }
         }, this));
+
 
 
     }
