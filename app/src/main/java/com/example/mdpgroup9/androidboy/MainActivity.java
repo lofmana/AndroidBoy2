@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public int x = 0;
     public int y = 0;
     public int zLight = 0;
+    public int wayPointX;
+    public int wayPointY;
 
     Handler repeatedHandler = new Handler();
     final Handler handler2 = new Handler();
@@ -257,6 +259,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         boolSetWayPoint = false;
                         int y = swapYvalue(ypos);
                         sendMessage(xpos + "," + y);
+                        wayPointX = xpos;
+                        wayPointY = y;
                         Toast.makeText(getBaseContext(), "X:" + xpos + " Y:" + y, Toast.LENGTH_SHORT).show();
                         gridList.set(position, object);
                         btnSetWayPoint.setBackgroundResource(android.R.drawable.btn_default);
@@ -357,7 +361,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             gridList.set(idx, object);
         }
         adapter.notifyDataSetChanged();
-        saveDirectionForRobot();
         boolSetRobot = false;
     }
 
@@ -883,6 +886,7 @@ last_status = status;
                 String part2 = array[1];
                 Log.d("part1" , part1);
                 Log.d("part2" , part2);
+                checkWayPoint(Integer.parseInt(part1) ,((Integer.parseInt(part2))));
                 int zpos = ((15*(swapYvalue(Integer.parseInt(part2))))+ Integer.parseInt(part1));
                 resetRobot(setRobotPOS);
                 setRobot(zpos);
@@ -1022,6 +1026,8 @@ last_status = status;
                     x = Integer.parseInt(value);
                     String value2 = editTextEnterY.getText().toString();
                     y = Integer.parseInt(value2);
+                    wayPointX = x;
+                    wayPointY = y;
                     int y2 = swapYvalue(y);
                     int zpos = (15 * y2) + x;
                     manualSetWayPoint(zpos);
@@ -1134,28 +1140,11 @@ last_status = status;
         }
     }
 
-    public void saveDirectionForRobot()
-    {
-        switch(direction) {
-            case "NORTH":
-                LightChecker(-1 , -15);
-                break;
-            case "SOUTH":
-                LightChecker(1 , 15);
-                break;
-            case "EAST":
-                LightChecker(15 , 1);
-                break;
-            case "WEST":
-                LightChecker(-15 , -1);
-                break;
-        }
-    }
-
-
 
     public void LightChecker(int oldlight , int newlight){
 
+        resetRobot(setRobotPOS);
+        setRobot(setRobotPOS);
         MapGrid object = gridList.get(setRobotPOS);
         int idx = (setRobotPOS - 15);
         object = gridList.get(idx);
@@ -1198,12 +1187,13 @@ last_status = status;
 
         }
 
-        public void sendWayPoint(int zpos)
+        public void checkWayPoint(int x , int y)
         {
-
-            MapGrid object = gridList.get(zpos);
-            object.getPosX();
-
+            if((x == wayPointX) && (y==wayPointY))
+            {
+                Toast.makeText(this, "Waypoint cleared", Toast.LENGTH_SHORT).show();
+                boolExistWayPoint = false;
+            }
         }
 
     }
