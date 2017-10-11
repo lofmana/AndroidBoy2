@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public Menu menu;
     public int x = 0;
     public int y = 0;
+    public int zLight = 0;
 
     Handler repeatedHandler = new Handler();
     final Handler handler2 = new Handler();
@@ -254,8 +255,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         object.setBg(R.color.Green);
                         boolExistWayPoint = true;
                         boolSetWayPoint = false;
-                        sendMessage("X:" + xpos + " Y:" + ypos);
-                        Toast.makeText(getBaseContext(), "X:" + xpos + " Y:" + ypos, Toast.LENGTH_SHORT).show();
+                        int y = swapYvalue(ypos);
+                        sendMessage(xpos + "," + y);
+                        Toast.makeText(getBaseContext(), "X:" + xpos + " Y:" + y, Toast.LENGTH_SHORT).show();
                         gridList.set(position, object);
                         btnSetWayPoint.setBackgroundResource(android.R.drawable.btn_default);
                     } else {
@@ -297,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         MapGrid object = gridList.get(zpos);
         object.setBg(R.color.Red);
         gridList.set(zpos, object);
-        int idx = (zpos) - 15; //Head Light
+        int idx = (zpos) - 15;
         object = gridList.get(idx);
         object.setBg(R.color.Red);//Head Light
         gridList.set(idx, object);
@@ -354,9 +356,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             object.setBg(R.color.Yellow);//Head Light
             gridList.set(idx, object);
         }
-
-
         adapter.notifyDataSetChanged();
+        saveDirectionForRobot();
         boolSetRobot = false;
     }
 
@@ -747,6 +748,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     boolExistWayPoint = false;
                     Toast.makeText(getBaseContext(), "Select Way Point on the Map", Toast.LENGTH_SHORT).show();
                     btnSetWayPoint.setBackgroundResource(R.color.Green);
+
                 }
                 else if (boolSetWayPoint){
                     boolSetWayPoint = false;
@@ -911,6 +913,7 @@ last_status = status;
                 int pos = diff + (i % 15);
                  int s = Integer.parseInt(String.valueOf(last_status.charAt(i)));
                 if (s == 0) {
+
                     grid = gridList.get(pos);
                     grid.setBg(R.color.Silver);
 
@@ -926,6 +929,7 @@ last_status = status;
             }
             Log.d("pos" , String.valueOf(setRobotPOS));
             setRobot(setRobotPOS);
+
             if (adapter != null) adapter.notifyDataSetChanged();
         }
 
@@ -993,6 +997,9 @@ last_status = status;
         editTextEnterX = (EditText) dialog.findViewById(R.id.editTextEnterX);
         editTextEnterY = (EditText) dialog.findViewById(R.id.editTextEnterY);
 
+        editTextEnterX = (EditText) dialog.findViewById(R.id.editTextEnterX);
+        editTextEnterY = (EditText) dialog.findViewById(R.id.editTextEnterY);
+
         dialog.findViewById(R.id.cancelButton).setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -1004,12 +1011,24 @@ last_status = status;
 
             @Override
             public void onClick(View v) {
-                String value = editTextEnterX.getText().toString();
-                x = Integer.parseInt(value);
-                String value2 = editTextEnterY.getText().toString();
-                y = Integer.parseInt(value2);
-                int zpos = (15*y) + x;
-                manualSetWayPoint(zpos);
+
+                if(boolExistWayPoint == true)
+                {
+                    Toast.makeText(getBaseContext(), "Way Point is already set", Toast.LENGTH_SHORT).show();
+                }
+                else
+                {
+                    String value = editTextEnterX.getText().toString();
+                    x = Integer.parseInt(value);
+                    String value2 = editTextEnterY.getText().toString();
+                    y = Integer.parseInt(value2);
+                    int y2 = swapYvalue(y);
+                    int zpos = (15 * y2) + x;
+                    manualSetWayPoint(zpos);
+                    boolExistWayPoint = true;
+                    dialog.dismiss();
+                    sendMessage(x + "," + y);
+                }
             }
         });
 
@@ -1022,6 +1041,8 @@ last_status = status;
         MapGrid object = gridList.get(position);
         object.setBg(R.color.Green);
         gridList.set(position,object);
+        adapter.notifyDataSetChanged();
+
     }
     public void CheckDirection() {
 //        Log.d("any", tv.getText().toString());
@@ -1113,6 +1134,26 @@ last_status = status;
         }
     }
 
+    public void saveDirectionForRobot()
+    {
+        switch(direction) {
+            case "NORTH":
+                LightChecker(-1 , -15);
+                break;
+            case "SOUTH":
+                LightChecker(1 , 15);
+                break;
+            case "EAST":
+                LightChecker(15 , 1);
+                break;
+            case "WEST":
+                LightChecker(-15 , -1);
+                break;
+        }
+    }
+
+
+
     public void LightChecker(int oldlight , int newlight){
 
         MapGrid object = gridList.get(setRobotPOS);
@@ -1126,7 +1167,7 @@ last_status = status;
         idx = (setRobotPOS + newlight);
         object = gridList.get(idx);
         object.setBg(R.color.Yellow);
-
+      
         adapter.notifyDataSetChanged();
 
         }
@@ -1154,6 +1195,14 @@ last_status = status;
 
             Log.d("testfinal" ,  status);
             return status;
+
+        }
+
+        public void sendWayPoint(int zpos)
+        {
+
+            MapGrid object = gridList.get(zpos);
+            object.getPosX();
 
         }
 
