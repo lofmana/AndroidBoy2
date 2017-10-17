@@ -848,46 +848,74 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         String map1 = "";
         try {
             JSONObject obj1 = new JSONObject(text);
-            status = obj1.getString("explore");
-            listItems.add("Part1 :" + status);
+            status = (String) obj1.get("explore");
+
             status = toBinary(status);
+
+            String s1 = status.toString();
+            int s2 = (s1.length());
+            Log.d("length" ,s2 + "");
 
 
             StringBuilder sb = new StringBuilder(status);
-
-//            sb.deleteCharAt(0);
-//            sb.deleteCharAt(1);
-//            sb.deleteCharAt(302);
-//            sb.deleteCharAt(303);
+            sb.deleteCharAt(302);
+            sb.deleteCharAt(302);
+            sb.deleteCharAt(0);
+            sb.deleteCharAt(0);
             status = sb.toString();
+            int s3 = (status.length());
+            Log.d("length2" ,s3 + "");
+            listItems.add("Part1 :" + status);
             Log.d("exploreBinary", status);
             last_status = status;
             markExplore();
 
-
-
-
-        } catch (Exception e) {
-            status = text;
-            tv.setText("Map String Grid received");
-        }
-        try {
-
             JSONObject obj2 = new JSONObject(text);
-            status = obj2.getString("grid");
-            listItems.add("Part2 :" + status);
-            listItems.add("End of string");
-            status = toBinary(status);
-            Log.d("obs", status);
-            last_status = status;
+            String gridString = (String) obj2.get("grid");
+            Log.d("asd", gridString);
+            gridString = toBinary(gridString);
+            last_status = gridString;
+            listItems.add("Part2 :" + gridString);
             refreshMap();
 
-
+            JSONObject obj3 = new JSONObject(text);
+                status = obj3.getString("robotPosition");
+                Log.d("robotstatus", status);
+                String[] array = status.split(",");
+                String part1 = array[0];
+                StringBuilder sb1 = new StringBuilder(part1);
+                sb1.deleteCharAt(0);
+                part1 = sb1.toString();
+                String part2 = array[1];
+                Log.d("part1", part1);
+                Log.d("part2", part2);
+                checkWayPoint(Integer.parseInt(part1), ((Integer.parseInt(part2))));
+                int zpos = ((15 * (swapYvalue(Integer.parseInt(part2)))) + Integer.parseInt(part1));
+                resetRobot(setRobotPOS);
+                setRobot(zpos);
+                setRobotPOS = zpos;
 
         } catch (Exception e) {
             status = text;
             tv.setText("Map String Grid received");
         }
+//        try {
+//
+//            JSONObject obj2 = new JSONObject(text);
+//            status = obj2.getString("grid");
+//            status = toBinary(status);
+//            listItems.add("Part2 :" + status);
+//            listItems.add("End of string");
+//            Log.d("obs", status);
+//            last_status = status;
+//            refreshMap();
+//
+//
+//
+//        } catch (Exception e) {
+//            status = text;
+//            tv.setText("Map String Grid received");
+//        }
 
 
         if (text.equals("{\"status\":\"turning right\"}") || (text.equals("R"))) {
@@ -906,30 +934,32 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             last_status = status;
             if (AUTO == true) refreshMap();
             status = "Map String received";
-        } else {
 
 
-            try {
-                JSONObject obj = new JSONObject(text);
-                status = obj.getString("robotPosition");
-                Log.d("robotstatus", status);
-                String[] array = status.split(",");
-                String part1 = array[0];
-                StringBuilder sb = new StringBuilder(part1);
-                sb.deleteCharAt(0);
-                part1 = sb.toString();
-                String part2 = array[1];
-                Log.d("part1", part1);
-                Log.d("part2", part2);
-                checkWayPoint(Integer.parseInt(part1), ((Integer.parseInt(part2))));
-                int zpos = ((15 * (swapYvalue(Integer.parseInt(part2)))) + Integer.parseInt(part1));
-                resetRobot(setRobotPOS);
-                setRobot(zpos);
-                setRobotPOS = zpos;
-            } catch (Exception e) {
-
-                status = text;
-            }
+//        } else {
+//
+//
+//            try {
+//                JSONObject obj = new JSONObject(text);
+//                status = obj.getString("robotPosition");
+//                Log.d("robotstatus", status);
+//                String[] array = status.split(",");
+//                String part1 = array[0];
+//                StringBuilder sb = new StringBuilder(part1);
+//                sb.deleteCharAt(0);
+//                part1 = sb.toString();
+//                String part2 = array[1];
+//                Log.d("part1", part1);
+//                Log.d("part2", part2);
+//                checkWayPoint(Integer.parseInt(part1), ((Integer.parseInt(part2))));
+//                int zpos = ((15 * (swapYvalue(Integer.parseInt(part2)))) + Integer.parseInt(part1));
+//                resetRobot(setRobotPOS);
+//                setRobot(zpos);
+//                setRobotPOS = zpos;
+//            } catch (Exception e) {
+//
+//                status = text;
+//            }
         }
 
 
