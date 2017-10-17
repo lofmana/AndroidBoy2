@@ -45,6 +45,10 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
 
+    ArrayList<String> listItems=new ArrayList<String>();
+    ArrayAdapter<String> adapter1;
+
+
     public String cur_direction = "NORTH";
     public int back = 1;
     public int front = 1;
@@ -81,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private EditText editTextEnterY;
     private EditText editCommandA;
     private EditText editCommandB;
+    private ListView listView;
     private TextInputLayout inputLayout;
     private ArrayAdapter<String> chatAdapter;
     private ArrayList<String> chatMessages;
@@ -383,6 +388,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         this.menu = menu;
 
 
+        getMenuInflater().inflate(R.menu.coordinates, menu);
         getMenuInflater().inflate(R.menu.waypoint_coordinates, menu);
         getMenuInflater().inflate(R.menu.settings, menu);
         getMenuInflater().inflate(R.menu.main, menu);
@@ -412,6 +418,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             case R.id.btnCompass:
                 showCompass();
+                return true;
+
+            case R.id.btnClipboard:
+                showClipboard();
                 return true;
 
 
@@ -839,6 +849,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         try {
             JSONObject obj1 = new JSONObject(text);
             status = obj1.getString("explore");
+            listItems.add("Part1 :" + status);
             status = toBinary(status);
 
 
@@ -854,6 +865,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             markExplore();
 
 
+
+
         } catch (Exception e) {
             status = text;
             tv.setText("Map String Grid received");
@@ -862,10 +875,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             JSONObject obj2 = new JSONObject(text);
             status = obj2.getString("grid");
+            listItems.add("Part2 :" + status);
+            listItems.add("End of string");
             status = toBinary(status);
             Log.d("obs", status);
             last_status = status;
             refreshMap();
+
 
 
         } catch (Exception e) {
@@ -1061,10 +1077,37 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
+
+    public void showClipboard()
+    {
+        dialog = new Dialog(this);
+        dialog.setContentView(R.layout.coordinates);
+        dialog.setTitle("Clipboard");
+
+        dialog.findViewById(R.id.cancelButton).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+
+        });
+
+        listView = (ListView) dialog.findViewById(R.id.listviewClipeboard);
+
+        adapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listItems);
+        listView.setAdapter(adapter1);
+
+
+        dialog.show();
+
+    }
+
     public void manualSetWayPoint(int position) {
         MapGrid object = gridList.get(position);
         object.setBg(R.color.Green);
         gridList.set(position, object);
+
         adapter.notifyDataSetChanged();
 
     }
