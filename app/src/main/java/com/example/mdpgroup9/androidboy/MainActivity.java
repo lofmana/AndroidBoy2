@@ -844,10 +844,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             StringBuilder sb = new StringBuilder(status);
 
-//            sb.deleteCharAt(0);
-//            sb.deleteCharAt(1);
-//            sb.deleteCharAt(302);
-//            sb.deleteCharAt(303);
+            sb.deleteCharAt(302);
+            sb.deleteCharAt(302);
+            sb.deleteCharAt(0);
+            sb.deleteCharAt(0);
             status = sb.toString();
             Log.d("exploreBinary", status);
             last_status = status;
