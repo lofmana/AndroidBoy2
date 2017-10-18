@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public int x = 0;
     public int y = 0;
     public int zLight = 0;
+    public String direction = "NORTH";
 
     Handler repeatedHandler = new Handler();
     final Handler handler2 = new Handler();
