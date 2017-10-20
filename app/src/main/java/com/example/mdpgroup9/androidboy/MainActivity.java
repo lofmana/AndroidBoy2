@@ -351,32 +351,32 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void resetRobot(int zpos) {
         if (adapter != null) {
             MapGrid object = gridList.get(zpos);
-            object.setBg(R.color.Silver);
+            object.setBg(R.color.Blue);
             gridList.set(zpos, object);
             int idx = (zpos + 15);
             object = gridList.get(idx);
-            object.setBg(R.color.Silver);
+            object.setBg(R.color.Blue);
             idx = (zpos - 15);
             object = gridList.get(idx);
-            object.setBg(R.color.Silver);
+            object.setBg(R.color.Blue);
             idx = (zpos + 1) + 15;
             object = gridList.get(idx);
-            object.setBg(R.color.Silver);
+            object.setBg(R.color.Blue);
             idx = (zpos + 1) - 15;
             object = gridList.get(idx);
-            object.setBg(R.color.Silver);
+            object.setBg(R.color.Blue);
             idx = (zpos - 1) + 15;
             object = gridList.get(idx);
-            object.setBg(R.color.Silver);
+            object.setBg(R.color.Blue);
             idx = (zpos - 1) - 15;
             object = gridList.get(idx);
-            object.setBg(R.color.Silver);
+            object.setBg(R.color.Blue);
             idx = (zpos - 1);
             object = gridList.get(idx);
-            object.setBg(R.color.Silver);
+            object.setBg(R.color.Blue);
             idx = (zpos + 1);
             object = gridList.get(idx);
-            object.setBg(R.color.Silver);
+            object.setBg(R.color.Blue);
 
             adapter.notifyDataSetChanged();
         }
@@ -771,7 +771,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View view) {
                 sendMessage("F");
                 tv.setText("Moving Forward");
-                CheckDirection();
+               // CheckDirection();
             }
         }, this));
 
@@ -781,7 +781,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View view) {
                 sendMessage("L");
                 tv.setText("Turning Left");
-                CheckDirection();
+               // CheckDirection();
             }
         }, this));
 
@@ -791,7 +791,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View view) {
                 sendMessage("R");
                 tv.setText("Turning Right");
-                CheckDirection();
+               // CheckDirection();
             }
         }, this));
 
@@ -868,6 +868,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             listItems.add("Part1 :" + status);
             Log.d("exploreBinary", status);
             last_status = status;
+//            resetRobot(setRobotPOS);
             markExplore();
 
             JSONObject obj2 = new JSONObject(text);
@@ -876,6 +877,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             gridString = toBinary(gridString);
             last_status = gridString;
             listItems.add("Part2 :" + gridString);
+            listItems.add("End of string");
             refreshMap();
 
             JSONObject obj3 = new JSONObject(text);
@@ -887,13 +889,36 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 sb1.deleteCharAt(0);
                 part1 = sb1.toString();
                 String part2 = array[1];
+                String part3 = array[2];
                 Log.d("part1", part1);
                 Log.d("part2", part2);
+
+            StringBuilder sb2 = new StringBuilder(part3);
+            sb2.deleteCharAt(3);
+            sb2.deleteCharAt(2);
+            sb2.deleteCharAt(0);
+            part3 = sb2.toString();
+            Log.d("part3", part3);
                 checkWayPoint(Integer.parseInt(part1), ((Integer.parseInt(part2))));
                 int zpos = ((15 * (swapYvalue(Integer.parseInt(part2)))) + Integer.parseInt(part1));
                 resetRobot(setRobotPOS);
                 setRobot(zpos);
                 setRobotPOS = zpos;
+            if (part3.equals("N")){
+                cur_direction = "NORTH";
+            }
+            else if (part3.equals("S")){
+                cur_direction = "SOUTH";
+            }
+            else if (part3.equals("E")){
+                cur_direction = "EAST";
+            }
+            else if (part3.equals("W")){
+                cur_direction = "WEST";
+            }
+            setRobot(setRobotPOS);
+
+
 
         } catch (Exception e) {
             status = text;
@@ -1144,104 +1169,104 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public void CheckDirection() {
 //        Log.d("any", tv.getText().toString());
-        if (tv.getText().toString().equals("Turning Left")) {
+//        if (tv.getText().toString().equals("Turning Left")) {
             switch (cur_direction) {
                 case "NORTH":
                     //change yellow to east
-                    LightChecker(-15, -1);
-                    cur_direction = "WEST";
+                    LightChecker(-15);
+//                    cur_direction = "WEST";
                     break;
                 case "SOUTH":
-                    LightChecker(15, 1);
-                    cur_direction = "EAST";
+                    LightChecker(15);
+//                    cur_direction = "EAST";
                     break;
                 case "EAST":
-                    LightChecker(1, -15);
-                    cur_direction = "NORTH";
+                    LightChecker(1);
+//                    cur_direction = "NORTH";
                     break;
                 case "WEST":
-                    LightChecker(-1, 15);
-                    cur_direction = "SOUTH";
+                    LightChecker(-1);
+//                    cur_direction = "SOUTH";
                     break;
             }
-        } else if (tv.getText().equals("Turning Right")) {
-            switch (cur_direction) {
-                case "NORTH":
-                    LightChecker(-15, 1);
-                    cur_direction = "EAST";
-                    break;
-                case "SOUTH":
-                    LightChecker(15, -1);
-                    cur_direction = "WEST";
-                    break;
-                case "EAST":
-                    LightChecker(1, 15);
-                    cur_direction = "SOUTH";
-                    break;
-                case "WEST":
-                    LightChecker(-1, -15);
-                    cur_direction = "NORTH";
-                    break;
-            }
+//        } else if (tv.getText().equals("Turning Right")) {
+//            switch (cur_direction) {
+//                case "NORTH":
+//                    LightChecker(-15, 1);
+////                    cur_direction = "EAST";
+//                    break;
+//                case "SOUTH":
+//                    LightChecker(15, -1);
+////                    cur_direction = "WEST";
+//                    break;
+//                case "EAST":
+//                    LightChecker(1, 15);
+////                    cur_direction = "SOUTH";
+//                    break;
+//                case "WEST":
+//                    LightChecker(-1, -15);
+////                    cur_direction = "NORTH";
+//                    break;
+//            }
+//
+//        } else if (tv.getText().equals("Moving Forward")) {
+//            MapGrid object = gridList.get(setRobotPOS);
+//            switch (cur_direction) {
+//                case "NORTH":
+//                    if (setRobotPOS >= 15 && setRobotPOS <= 29) {
+//                        Toast.makeText(getBaseContext(), "Not allowed to move out of map", Toast.LENGTH_SHORT).show();
+//                    } else {
+//                        resetRobot(setRobotPOS);
+//                        setRobotPOS -= 15;
+//                        setRobot(setRobotPOS);
+//                    }
+//                    break;
+//                case "SOUTH":
+//                    if (setRobotPOS >= 270 && setRobotPOS <= 284) {
+//                        Toast.makeText(getBaseContext(), "Not allowed to move out of map", Toast.LENGTH_SHORT).show();
+//                    } else {
+//                        resetRobot(setRobotPOS);
+//                        setRobotPOS += 15;
+//                        setRobot(setRobotPOS);
+//                    }
+//                    break;
+//                case "EAST":
+//                    if (setRobotPOS % 15 == 13) {
+//                        Toast.makeText(getBaseContext(), "Not allowed to move out of map", Toast.LENGTH_SHORT).show();
+//                    } else {
+//                        resetRobot(setRobotPOS);
+//                        setRobotPOS += 1;
+//                        setRobot(setRobotPOS);
+//                    }
+//                    break;
+//                case "WEST":
+//                    if (setRobotPOS % 15 == 1) {
+//                        Toast.makeText(getBaseContext(), "Not allowed to move out of map", Toast.LENGTH_SHORT).show();
+//                    } else {
+//                        resetRobot(setRobotPOS);
+//                        setRobotPOS -= 1;
+//                        setRobot(setRobotPOS);
+//                    }
+//                    break;
+//            }
 
-        } else if (tv.getText().equals("Moving Forward")) {
-            MapGrid object = gridList.get(setRobotPOS);
-            switch (cur_direction) {
-                case "NORTH":
-                    if (setRobotPOS >= 15 && setRobotPOS <= 29) {
-                        Toast.makeText(getBaseContext(), "Not allowed to move out of map", Toast.LENGTH_SHORT).show();
-                    } else {
-                        resetRobot(setRobotPOS);
-                        setRobotPOS -= 15;
-                        setRobot(setRobotPOS);
-                    }
-                    break;
-                case "SOUTH":
-                    if (setRobotPOS >= 270 && setRobotPOS <= 284) {
-                        Toast.makeText(getBaseContext(), "Not allowed to move out of map", Toast.LENGTH_SHORT).show();
-                    } else {
-                        resetRobot(setRobotPOS);
-                        setRobotPOS += 15;
-                        setRobot(setRobotPOS);
-                    }
-                    break;
-                case "EAST":
-                    if (setRobotPOS % 15 == 13) {
-                        Toast.makeText(getBaseContext(), "Not allowed to move out of map", Toast.LENGTH_SHORT).show();
-                    } else {
-                        resetRobot(setRobotPOS);
-                        setRobotPOS += 1;
-                        setRobot(setRobotPOS);
-                    }
-                    break;
-                case "WEST":
-                    if (setRobotPOS % 15 == 1) {
-                        Toast.makeText(getBaseContext(), "Not allowed to move out of map", Toast.LENGTH_SHORT).show();
-                    } else {
-                        resetRobot(setRobotPOS);
-                        setRobotPOS -= 1;
-                        setRobot(setRobotPOS);
-                    }
-                    break;
-            }
-
-        }
+//        }
     }
 
 
-    public void LightChecker(int oldlight, int newlight) {
+    public void LightChecker(int newlight) {
 
         resetRobot(setRobotPOS);
         setRobot(setRobotPOS);
         MapGrid object = gridList.get(setRobotPOS);
-        int idx = (setRobotPOS - 15);
-        object = gridList.get(idx);
-        object.setBg(R.color.Red);
-        gridList.set(idx, object);
-        idx = (setRobotPOS + oldlight);
-        object = gridList.get(idx);
-        object.setBg(R.color.Red);
-        idx = (setRobotPOS + newlight);
+//        int idx = (setRobotPOS - 15);
+//        object = gridList.get(idx);
+//        object.setBg(R.color.Red);
+//        gridList.set(idx, object);
+//        idx = (setRobotPOS + oldlight);
+//        object = gridList.get(idx);
+//        object.setBg(R.color.Red);
+        int idx = (setRobotPOS + newlight);
         object = gridList.get(idx);
         object.setBg(R.color.Yellow);
 
@@ -1307,6 +1332,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             if (adapter != null) adapter.notifyDataSetChanged();
         }
+    }
+
+    public void setExplore(){
+
     }
 }
 
