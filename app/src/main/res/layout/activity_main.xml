@@ -265,4 +265,13 @@
         android:layout_alignLeft="@+id/btnFast"
         android:layout_alignStart="@+id/btnFast" />
 
+    <CheckBox
+        android:id="@+id/checkBoxEvil"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btnSelAutoManual"
+        android:layout_alignEnd="@+id/btnSetRobot"
+        android:layout_alignRight="@+id/btnSetRobot"
+        android:text="Evil" />
+
 </RelativeLayout>
