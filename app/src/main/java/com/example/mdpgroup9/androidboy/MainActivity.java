@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public int x = 0;
     public int y = 0;
     public int zLight = 0;
-    public int wayPointX;
-    public int wayPointY;
+    public int wayPointX = 0;
+    public int wayPointY = 0;
 
     Handler repeatedHandler = new Handler();
     final Handler handler2 = new Handler();
@@ -239,14 +239,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     int xpos = position % 15;
                     int ypos = position / 15;
                     int zpos = position;
-                    sendMessage("X:" + xpos + " Y:" + ypos + " Z:" + zpos);
+                    //sendMessage("X:" + xpos + " Y:" + ypos + " Z:" + zpos);
                     if (col != R.color.Green && boolSetWayPoint == true && boolExistWayPoint == false) {
                         view.setBackgroundResource(R.color.Green);
                         object.setBg(R.color.Green);
                         boolExistWayPoint = true;
                         boolSetWayPoint = false;
                         int y = swapYvalue(ypos);
-                        sendMessage(xpos + "," + y);
+//                        sendMessage("WP"+ xpos + "," + y);
                         wayPointX = xpos;
                         wayPointY = y;
                         Toast.makeText(getBaseContext(), "X:" + xpos + " Y:" + y, Toast.LENGTH_SHORT).show();
@@ -815,8 +815,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         btnFast.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendMessage("FP");
-                tv.setText("Fastest Path");
+                if (wayPointX == 0 && wayPointY == 0){
+                    Toast.makeText(getBaseContext(), "WayPoint has not been set", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    sendMessage("FP;"+wayPointX+","+wayPointY);
+                    Log.d("Fnpoint","FP;"+wayPointX+","+wayPointY);
+                    tv.setText("Fastest Path");
+                }
             }
         }, this));
 
@@ -880,6 +886,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             JSONObject obj3 = new JSONObject(text);
                 status = obj3.getString("robotPosition");
+            //status = (String) obj3.get("robotPosition"); // TODO: 19/10/2017  
                 Log.d("robotstatus", status);
                 String[] array = status.split(",");
                 String part1 = array[0];
@@ -887,13 +894,28 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 sb1.deleteCharAt(0);
                 part1 = sb1.toString();
                 String part2 = array[1];
+//                String part3 = array[2]; // TODO: 19/10/2017  
                 Log.d("part1", part1);
                 Log.d("part2", part2);
+//                Log.d("part3",part3);// TODO: 19/10/2017  
                 checkWayPoint(Integer.parseInt(part1), ((Integer.parseInt(part2))));
                 int zpos = ((15 * (swapYvalue(Integer.parseInt(part2)))) + Integer.parseInt(part1));
                 resetRobot(setRobotPOS);
                 setRobot(zpos);
                 setRobotPOS = zpos;
+//                if (part3 == "N"){ // TODO: 19/10/2017  
+//                    cur_direction = "NORTH";
+//                }
+//                else if (part3 == "S"){
+//                    cur_direction = "SOUTH";
+//                }
+//                else if (part3 == "E"){
+//                    cur_direction = "EAST";
+//                }
+//                else if (part3 == "W"){
+//                    cur_direction = "WEST";
+//                }
+
 
         } catch (Exception e) {
             status = text;
@@ -1097,7 +1119,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     manualSetWayPoint(zpos);
                     boolExistWayPoint = true;
                     dialog.dismiss();
-                    sendMessage(x + "," + y);
+//                    sendMessage("WP"+x + "," + y);
                 }
             }
         });
@@ -1149,7 +1171,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 case "NORTH":
                     //change yellow to east
                     LightChecker(-15, -1);
-                    cur_direction = "WEST";
+                    cur_direction = "WEST"; // TODO: 19/10/2017  
                     break;
                 case "SOUTH":
                     LightChecker(15, 1);
