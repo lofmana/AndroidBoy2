@@ -58,8 +58,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public int x = 0;
     public int y = 0;
     public int zLight = 0;
-    public int wayPointX;
-    public int wayPointY;
+    public int wayPointX = 0;
+    public int wayPointY = 0;
 
     Handler repeatedHandler = new Handler();
     final Handler handler2 = new Handler();
@@ -239,14 +239,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     int xpos = position % 15;
                     int ypos = position / 15;
                     int zpos = position;
-                    sendMessage("X:" + xpos + " Y:" + ypos + " Z:" + zpos);
+//                    sendMessage("X:" + xpos + " Y:" + ypos + " Z:" + zpos);
                     if (col != R.color.Green && boolSetWayPoint == true && boolExistWayPoint == false) {
                         view.setBackgroundResource(R.color.Green);
                         object.setBg(R.color.Green);
                         boolExistWayPoint = true;
                         boolSetWayPoint = false;
                         int y = swapYvalue(ypos);
-                        sendMessage(xpos + "," + y);
+//                        sendMessage(xpos + "," + y);
                         wayPointX = xpos;
                         wayPointY = y;
                         Toast.makeText(getBaseContext(), "X:" + xpos + " Y:" + y, Toast.LENGTH_SHORT).show();
@@ -815,8 +815,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         btnFast.setOnTouchListener(new RepeatListener(400, 200, new OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendMessage("FP");
-                tv.setText("Fastest Path");
+                if (boolExistWayPoint == false){
+                    Toast.makeText(getBaseContext(),"WayPoint has not been set", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    sendMessage("FP;"+wayPointX+","+wayPointY);
+                    Log.d("FnPointSend","FP;"+wayPointX+","+wayPointY);
+                    tv.setText("Fastest Path");
+                }
+
             }
         }, this));
 
@@ -1122,7 +1129,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     manualSetWayPoint(zpos);
                     boolExistWayPoint = true;
                     dialog.dismiss();
-                    sendMessage(x + "," + y);
+//                    sendMessage(x + "," + y);
                 }
             }
         });
