@@ -874,7 +874,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Log.d("length2" ,s3 + "");
 
 
-            String hexa = Integer.toHexString(Integer.parseInt(status));
+            String hexa = Integer.toHexString(Integer.parseInt(status,2));
             listItems.add("Part1 :" + hexa);
 
             Log.d("exploreBinary", status);
@@ -888,7 +888,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             gridString = toBinary(gridString);
             last_status = gridString;
 
-            String hexa2 = Integer.toHexString(Integer.parseInt(gridString));
+            String hexa2 = Integer.toHexString(Integer.parseInt(gridString ,2));
             listItems.add("Part2 :" + hexa2);
             listItems.add("End of string");
             refreshMap();
