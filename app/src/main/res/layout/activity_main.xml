@@ -272,6 +272,7 @@
         android:layout_above="@+id/btnSelAutoManual"
         android:layout_alignEnd="@+id/btnSetRobot"
         android:layout_alignRight="@+id/btnSetRobot"
-        android:text="Evil" />
+        android:text="Evil"
+        android:visibility="invisible" />
 
 </RelativeLayout>
