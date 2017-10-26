@@ -872,7 +872,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             status = sb.toString();
             int s3 = (status.length());
             Log.d("length2" ,s3 + "");
-            listItems.add("Part1 :" + status);
+
+
+            String hexa = Integer.toHexString(Integer.parseInt(status));
+            listItems.add("Part1 :" + hexa);
+
             Log.d("exploreBinary", status);
             last_status = status;
 //            resetRobot(setRobotPOS);
@@ -883,9 +887,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             Log.d("asd", gridString);
             gridString = toBinary(gridString);
             last_status = gridString;
-            listItems.add("Part2 :" + gridString);
+
+            String hexa2 = Integer.toHexString(Integer.parseInt(gridString));
+            listItems.add("Part2 :" + hexa2);
             listItems.add("End of string");
             refreshMap();
+
 
             JSONObject obj3 = new JSONObject(text);
                 status = obj3.getString("robotPosition");
