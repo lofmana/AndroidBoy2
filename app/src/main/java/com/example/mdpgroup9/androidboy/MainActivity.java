@@ -771,7 +771,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View view) {
                 sendMessage("F");
                 tv.setText("Moving Forward");
-               // CheckDirection();
+                // CheckDirection();
             }
         }, this));
 
@@ -781,7 +781,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View view) {
                 sendMessage("L");
                 tv.setText("Turning Left");
-               // CheckDirection();
+                // CheckDirection();
             }
         }, this));
 
@@ -791,7 +791,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             public void onClick(View view) {
                 sendMessage("R");
                 tv.setText("Turning Right");
-               // CheckDirection();
+                // CheckDirection();
             }
         }, this));
 
@@ -856,6 +856,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         try {
             JSONObject obj1 = new JSONObject(text);
             status = (String) obj1.get("explore");
+            String text1 = status;
 
             status = toBinary(status);
 
@@ -872,11 +873,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             status = sb.toString();
             int s3 = (status.length());
             Log.d("length2" ,s3 + "");
-
-
-            String hexa = Integer.toHexString(Integer.parseInt(status,2));
-            listItems.add("Part1 :" + hexa);
-
+            listItems.add("Part1 :" + text1);
             Log.d("exploreBinary", status);
             last_status = status;
 //            resetRobot(setRobotPOS);
@@ -884,28 +881,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             JSONObject obj2 = new JSONObject(text);
             String gridString = (String) obj2.get("grid");
+            String text2 = gridString;
             Log.d("asd", gridString);
             gridString = toBinary(gridString);
             last_status = gridString;
-
-            String hexa2 = Integer.toHexString(Integer.parseInt(gridString ,2));
-            listItems.add("Part2 :" + hexa2);
+            listItems.add("Part2 :" + text2);
             listItems.add("End of string");
             refreshMap();
 
-
             JSONObject obj3 = new JSONObject(text);
-                status = obj3.getString("robotPosition");
-                Log.d("robotstatus", status);
-                String[] array = status.split(",");
-                String part1 = array[0];
-                StringBuilder sb1 = new StringBuilder(part1);
-                sb1.deleteCharAt(0);
-                part1 = sb1.toString();
-                String part2 = array[1];
-                String part3 = array[2];
-                Log.d("part1", part1);
-                Log.d("part2", part2);
+            status = obj3.getString("robotPosition");
+            Log.d("robotstatus", status);
+            String[] array = status.split(",");
+            String part1 = array[0];
+            StringBuilder sb1 = new StringBuilder(part1);
+            sb1.deleteCharAt(0);
+            part1 = sb1.toString();
+            String part2 = array[1];
+            String part3 = array[2];
+            Log.d("part1", part1);
+            Log.d("part2", part2);
 
             StringBuilder sb2 = new StringBuilder(part3);
             sb2.deleteCharAt(3);
@@ -913,11 +908,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             sb2.deleteCharAt(0);
             part3 = sb2.toString();
             Log.d("part3", part3);
-                checkWayPoint(Integer.parseInt(part1), ((Integer.parseInt(part2))));
-                int zpos = ((15 * (swapYvalue(Integer.parseInt(part2)))) + Integer.parseInt(part1));
-                resetRobot(setRobotPOS);
-                setRobot(zpos);
-                setRobotPOS = zpos;
+            checkWayPoint(Integer.parseInt(part1), ((Integer.parseInt(part2))));
+            int zpos = ((15 * (swapYvalue(Integer.parseInt(part2)))) + Integer.parseInt(part1));
+            resetRobot(setRobotPOS);
+            setRobot(zpos);
+            setRobotPOS = zpos;
             if (part3.equals("N")){
                 cur_direction = "NORTH";
             }
@@ -1184,25 +1179,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void CheckDirection() {
 //        Log.d("any", tv.getText().toString());
 //        if (tv.getText().toString().equals("Turning Left")) {
-            switch (cur_direction) {
-                case "NORTH":
-                    //change yellow to east
-                    LightChecker(-15);
+        switch (cur_direction) {
+            case "NORTH":
+                //change yellow to east
+                LightChecker(-15);
 //                    cur_direction = "WEST";
-                    break;
-                case "SOUTH":
-                    LightChecker(15);
+                break;
+            case "SOUTH":
+                LightChecker(15);
 //                    cur_direction = "EAST";
-                    break;
-                case "EAST":
-                    LightChecker(1);
+                break;
+            case "EAST":
+                LightChecker(1);
 //                    cur_direction = "NORTH";
-                    break;
-                case "WEST":
-                    LightChecker(-1);
+                break;
+            case "WEST":
+                LightChecker(-1);
 //                    cur_direction = "SOUTH";
-                    break;
-            }
+                break;
+        }
 //        } else if (tv.getText().equals("Turning Right")) {
 //            switch (cur_direction) {
 //                case "NORTH":
